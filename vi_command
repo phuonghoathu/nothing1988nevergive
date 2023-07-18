@@ -1,0 +1,17 @@
+1.1 Command Mode			
+dd => Xóa hàng		
+yy	=> copy		
+p	=> past	
+5yy	=> copy 5 hàng		
+/	=>  Grep
+gg	=> Tới line đầu		
+G	=> tới line cuối		
+u	=> undo thay đôit		
+
+1.2 Extended Mode: ( Colon Mode)			
+:X	=> Tạo hoặc xóa password		
+:20	=> Tới line 20		
+se nu	=> Hiển thị line		
+se nonu	=> Xóa hiển thị line
+
+:%s/name/lisa	replace name bằng từ lisa		Thêm /g để map nhiều hit trên 1 line
