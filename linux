@@ -10,5 +10,5 @@ root:x:0:0:root:/root:/bin/bash
 Tên:Linkpass:UID:GID:Comment:thư mục gốc:thư mục thực thi					
 [root@localhost ~]# cat /etc/group					
 root:x:0:		= Tên:link pass:GID:Group Menber					
-Thêm user	sudo adduser XXX				
+<b>Thêm user</b>	sudo adduser XXX				
 Thêm pass sudo passwd XXX		Nhập pass		
