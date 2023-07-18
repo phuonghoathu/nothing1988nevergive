@@ -1,0 +1,19 @@
+1. Tạo SSH key
+  Step1: Tạo user phuonglinh
+  Step2: Tạo Public key & Private key
+      $ ssh-keygen -t rsa
+      $ cd /home/phuonglinh/.ssh
+      $ mv id_rsa.pub authorized_keys
+      $ chmod 600 authorized_keys
+  Step3: Copy or share file private key id_rsa về phía user
+  Step4: Đăng nhập thử bằng putty
+
+2. Chặn truy cập từ xa bằng password
+2.1 vào root
+2.2 vi /ect/ssh/sshd_config
+=> change PasswordAuthentication thành No
+service restart sshd.service
+
+3. Cho phép user có quyền sudo
+   3.1: visudo
+   3.2 Thêm quyền ở line Allow root to run any commands here
