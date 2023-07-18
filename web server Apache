@@ -1,0 +1,30 @@
+1. Cấu hình DNS
+1.1 Thêu 1 tên miền và cấu hình DNS trỏ tới domain tới IP của mình
+1.2 Kiểm tra nslookup domainname
+2. Cài đặt Apache
+1.2 yum install httpd
+Start : service httpd start
+Kiểm tra : telnet localhost 80
+3. Mở firewall port 80
+Setting opem portt trên aws
+4. Cấu hình tên miền
+4.1 Thư mục lưu trữ web: /var/www/html/
+4.2 Tạo thư mục bất kỳ: mkdir testWeb
+4.3 Vì apache có user và group là apache nên cần thay đôit onwer của thư mục mới tạo
+chown -Rf :apache testWeb/
+4.4 vi /etc/httpd/conf/httpd.conf
+
+NameVirtualHost *:80
+<VirtualHost *:80>
+    ServerAdmin info@coderhanoi.com
+    DocumentRoot /var/www/html/testWeb
+    ServerName abc.com.org
+    <Directory "/var/www/html/testWeb">    
+           Order deny,allow
+           Allow from all
+           AllowOverride All
+          Require all granted
+   </Directory>
+</VirtualHost>
+4.5 service httpd restart
+
