@@ -1,5 +1,5 @@
 1. Tạo SSH key
-  Step1: Tạo user phuonglinh
+  Step1: Tạo user phuonglinh - adduser
   Step2: Tạo Public key & Private key
       $ ssh-keygen -t rsa
       $ cd /home/phuonglinh/.ssh
