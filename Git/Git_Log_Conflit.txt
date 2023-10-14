@@ -1,0 +1,229 @@
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git branch
+* master
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ ls
+demo.txt  demo2.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git branch dev_102023
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git branch
+  dev_102023
+* master
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git checkout dev_102023
+Switched to branch 'dev_102023'
+M       demo.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ vi demo.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ vi demo2.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ git add .
+warning: LF will be replaced by CRLF in demo2.txt.
+The file will have its original line endings in your working directory
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ git commit -m "Update source for dev_102023"
+[dev_102023 3348a1c] Update source for dev_102023
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+ create mode 100644 demo2.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ ls
+demo.txt  demo2.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ git log
+commit 3348a1ce912b00c54f6f06039988229ddb196f4b (HEAD -> dev_102023)
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:50:25 2023 +0700
+
+    Update source for dev_102023
+
+commit 59260e0e40e0d49644ebf8fcd0bc2af494c6b026 (master)
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Tue Oct 10 20:24:40 2023 +0700
+
+    Firt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ git checkout master
+Switched to branch 'master'
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ vi demo.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git add .
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git commit -m "Update from master"
+[master 3c4bb1c] Update from master
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git merge dev_102023
+Auto-merging demo.txt
+CONFLICT (content): Merge conflict in demo.txt
+Automatic merge failed; fix conflicts and then commit the result.
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master|MERGING)
+$ git status
+On branch master
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Changes to be committed:
+        new file:   demo2.txt
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+        both modified:   demo.txt
+
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master|MERGING)
+$ vi demo.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master|MERGING)
+$ git status
+On branch master
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Changes to be committed:
+        new file:   demo2.txt
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+        both modified:   demo.txt
+
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master|MERGING)
+$ git add demo.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master|MERGING)
+$ git staus
+git: 'staus' is not a git command. See 'git --help'.
+
+The most similar command is
+        status
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master|MERGING)
+$ git status
+On branch master
+All conflicts fixed but you are still merging.
+  (use "git commit" to conclude merge)
+
+Changes to be committed:
+        modified:   demo.txt
+        new file:   demo2.txt
+
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master|MERGING)
+$ git commit -m "Meger from dev_102023"
+[master 17cec79] Meger from dev_102023
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ ls
+demo.txt  demo2.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ cat demo2.txt
+hello demo 2
+asd
+dasd
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git log
+commit 17cec79145c5b1045f6dd112272f9487a4287bc1 (HEAD -> master)
+Merge: 3c4bb1c 3348a1c
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:55:05 2023 +0700
+
+    Meger from dev_102023
+
+commit 3c4bb1cacc7f1ef5a2147cb1c5a5e04852ac88f1
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:52:35 2023 +0700
+
+    Update from master
+
+commit 3348a1ce912b00c54f6f06039988229ddb196f4b (dev_102023)
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:50:25 2023 +0700
+
+    Update source for dev_102023
+
+commit 59260e0e40e0d49644ebf8fcd0bc2af494c6b026
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Tue Oct 10 20:24:40 2023 +0700
+
+    Firt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (master)
+$ git checkout dev_102023
+Switched to branch 'dev_102023'
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ vi demo.txt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ git log
+commit 3348a1ce912b00c54f6f06039988229ddb196f4b (HEAD -> dev_102023)
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:50:25 2023 +0700
+
+    Update source for dev_102023
+
+commit 59260e0e40e0d49644ebf8fcd0bc2af494c6b026
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Tue Oct 10 20:24:40 2023 +0700
+
+    Firt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ git merge master
+Updating 3348a1c..17cec79
+Fast-forward
+ demo.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)
+$ git log
+commit 17cec79145c5b1045f6dd112272f9487a4287bc1 (HEAD -> dev_102023, master)
+Merge: 3c4bb1c 3348a1c
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:55:05 2023 +0700
+
+    Meger from dev_102023
+
+commit 3c4bb1cacc7f1ef5a2147cb1c5a5e04852ac88f1
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:52:35 2023 +0700
+
+    Update from master
+
+commit 3348a1ce912b00c54f6f06039988229ddb196f4b
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Sat Oct 14 19:50:25 2023 +0700
+
+    Update source for dev_102023
+
+commit 59260e0e40e0d49644ebf8fcd0bc2af494c6b026
+Author: LAPTOP-N7HC91JL\ASUS <phuonghoathu@gmail.com>
+Date:   Tue Oct 10 20:24:40 2023 +0700
+
+    Firt
+
+ASUS@LAPTOP-N7HC91JL MINGW64 /d/couser/GIT/001 (dev_102023)

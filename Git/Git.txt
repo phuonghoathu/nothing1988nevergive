@@ -1,0 +1,61 @@
+git init
+git status
+git log
+git add
+git commit
+git reset
+Git Restore:
+
+Lệnh git restore được sử dụng để loại bỏ sự thay đổi chưa được lưu (thay đổi đã được thêm vào staging area) khỏi thư mục làm việc hoặc khỏi staging area.
+Nó không tạo commit mới.
+Ví dụ: Nếu bạn đã thêm một tệp vào staging area nhưng muốn loại bỏ nó khỏi staging area, bạn có thể sử dụng lệnh git restore --staged <file>.
+
+css
+Copy code
+$ git add file.txt  # Thêm file.txt vào staging area
+$ git restore --staged file.txt  # Loại bỏ file.txt khỏi staging area
+Git Revert:
+
+Lệnh git revert được sử dụng để tạo một commit mới chứa thay đổi ngược với một commit đã tồn tại.
+Nó giúp xóa các thay đổi cũ bằng cách tạo một commit mới thay thế.
+Ví dụ: Nếu bạn muốn xóa thay đổi trong commit cuối cùng, bạn có thể sử dụng git revert HEAD:
+
+shell
+Copy code
+$ git log  # Xem lịch sử commit
+$ git revert HEAD  # Tạo commit mới để xóa thay đổi trong commit cuối cùng
+Git Reset:
+
+Lệnh git reset được sử dụng để di chuyển HEAD và branch reference tới một commit cụ thể, và có thể đi kèm với các tùy chọn khác để điều chỉnh các vị trí khác nhau.
+Nó có thể dẫn đến mất dữ liệu nếu sử dụng không đúng cách.
+Ví dụ: Nếu bạn muốn quay lại trạng thái trước của một commit cụ thể và loại bỏ các commit sau đó, bạn có thể sử dụng git reset:
+
+css
+Copy code
+$ git log  # Xem lịch sử commit và xác định commit cần reset
+$ git reset --hard <commit-SHA>  # Quay lại commit cụ thể và loại bỏ các commit sau đó
+Lưu ý rằng việc sử dụng git reset có thể gây mất dữ liệu và thay đổi lịch sử của dự án, vì vậy hãy sử dụng cẩn thận. Đối với việc xóa lịch sử hoặc thay đổi trên nhánh đã được chia sẻ với người khác, git revert là lựa chọn an toàn hơn.
+
+Git tự động chọn giải thuật Fast-Forward hoặc Three-Way Merge dựa trên cấu hình và lịch sử của nhánh bạn đang cố gộp. Hệ thống quyết định cách merge dựa trên nguyên tắc sau:
+
+Fast-Forward Merge:
+
+Fast-Forward Merge được sử dụng khi lịch sử của nhánh con có thay đổi mới, nhưng không có thay đổi chút nào sau khi nhánh con được tạo ra (nghĩa là không có commit mới trên nhánh chính kể từ khi tạo nhánh con).
+Trong trường hợp này, Git có thể đơn giản dịch chuyển nhánh chính đến commit cuối cùng của nhánh con và không cần tạo một commit merge mới.
+Three-Way Merge:
+
+Three-Way Merge được sử dụng khi lịch sử của cả hai nhánh (nhánh chính và nhánh con) có thay đổi riêng biệt sau khi nhánh con được tạo ra.
+Trong trường hợp này, Git tạo một commit merge mới để kết hợp các thay đổi. Commit merge này có hai commit cha: một là commit cuối cùng của nhánh chính và một là commit cuối cùng của nhánh con.
+Git sử dụng giải thuật Three-Way Merge để tự động tìm và áp dụng thay đổi từ cả hai phía. Nếu có xung đột, người dùng phải giải quyết chúng.
+
+git log --graph --oneline
+git branch                | Used to manage branches
+git branch <name>         | Creates the branch
+git branch -d <name>      | Deletes the branch
+git branch -D <name>      | Forcibly deletes the branch
+git checkout <branch>     | Switches to a branch.
+git checkout -b <branch>  | Creates a new branch and switches to it
+git merge <branch>        | Merge joins branches together
+git merge --abort         | If there are merge conflicts (meaning files are incompatible), --abort can be used to abort the merge action.
+git log --graph --oneline | This shows a summarized view of the commit history for a repo
+.
