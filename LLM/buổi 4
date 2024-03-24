@@ -1,0 +1,23 @@
+a. Mỗi neuron thực hiện 1 phép y = ax + b => linear function
+=> tìm a và b sao cho đúng nhất. Nếu 7 tỷ thì có 7 tỷ phép tính => tìm 7 tỷ cái a và 7 tỷ cái b
+Nên khi tranning thì số lượng GPU thì gấp 4 lần còn inference thì gấp đôi
+b. Top-p và top-k: ảnh huopwngr tới kiểm soát LLM có thể nói
+Bnả chất LLM là sác xuất thông kê, nó giúp việc lựa ra các từ trong trường hiệp nhiều case có thể chọn
+=> giúp cho việc điều khiển từ ra của LLM
+thương top-p = 0.0 đến 0.95 và top-k = 40 hoặc 50 
+c. Frequency penalty(1.0 hoặc 1.05 , đối khi cần ouput sáng tọa để 1.2) : điều chinhr xác xuất sinh ra các token xuất hiện thường xuyên trong dữ liệu huấn luyện (có thể chính là priomt)
+Nếu giá trị dương thì giảm xác xuất sinh ra các thống kê phổ biến
+d. Presence penalty (1.0): điều chỉnh xác xuất sih ra các token chưa xuất hiện trong câu đầu voài. Nếu dương thì giảm xác xuất sinh ra các tkoen liên quan
+e. Max token / sequence length: liên quan đến độ dài tối đa của 1 văn bản sinh ra bởi LLM
+=> chỉnh context length ngắn lại thì GPU và VRAM ít đi. Cũng có 1 vài cách tối ưu
+(2048)
+Function calling: tính năng nnawng cáo của LLM cho phép người dùng sử dụng đêt hực hiện 1 số các hoatj động đọc đáo:
+   + Có các function để định nghĩa các làn đầu vào
+   + Khi trả ra ouput thì sẽ ở dạng JSON
+   + Gỉa quyết bài aosn văn bản không nhất quán và khó đaons
+   + Truy cập API bên ngoài , thực thi truy vấn SQL ùy chỉnh
+   + Trích xuất thông tin liên quan đến văn bải
+Luồng hoạt dộng: chát qua interface nào đấy( ). 
+
+
+
