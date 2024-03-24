@@ -1,0 +1,11 @@
+Chain-of-thougths: Là phương pháp quan trọng, là 1 bước tiến. Mặc dù đơn giản nhưng hiệu quả rất lớn
+Là một chuổi các suy nghĩ
+Là một kỹ thuật được sửa dụng để cải thiện hiệu suất cảu LLM trong các tác vụ lập luận phức tạp
+Trong câu promt chúng ta cần phải cho LLM thấy 1 số lý dụ để giải thích câu trả lời
+Chúng ta sẽ bắt chúng suy luận.
+Đầu vào sẽ được bổ sung thêm các bước lập luận trung gian. Nó phác thảo lập luận logic của con người
+Zero-shot-Cot: thêm câu Let's think step by step??? Bị nén đá và thực tế không hiệu quả
+
+Agents
+
+
