@@ -9,3 +9,12 @@ Buổi 4:
 https://youtube.com/live/3Naf8MayykU?feature=share
 Buổi 5:
 https://youtube.com/live/8Q9B2JiyGBU?feature=share
+Buổi 6:
+https://youtube.com/live/ne-ZGeaVrqs?feature=share
+Buổi 7:
+https://youtube.com/live/ODUBITuSU4U?feature=share
+Buổi 8:
+https://youtube.com/live/OgN87CFDLvc?feature=share
+Finetune với Unsloth
+https://youtu.be/Ujpwg98rHQg
+Colab: https://colab.research.google.com/drive/1CoWbYqJtAbdj5H63yshgy-6b08yWoywM
