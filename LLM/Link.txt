@@ -38,6 +38,36 @@ https://www.langchain.com/langsmith
 Buổi 6:
 
 
+Các nguồn thông tin tham khảo cho học viên
+
+Nguồn chính thống:
+
+Trang chủ OpenAI: openai.com
+OpenAI Cookbook - Các notebook hướng dẫn sử dụng OpenAI API một cách hiểu quả
+Google AI - Trang chủ của Google AI Research
+Meta AI Research - Trang chủ của Meta AI Research
+
+Các Thư Viện:
+LangChain
+Gradio
+DSPy
+
+Mạng xã hội:
+
+@OpenAI, @ChatGPTapp - Twitter chính thức của OpenAI và ChatGPT
+Marc Andreesen - Co-Founder quỹ đầu tư mạo hiểm A16z, thường đưa ra nhận định về các giải pháp AI thực dụng có giá trị cao
+Sam Altman, roon - Sam Altman và nick clone của anh
+Yann LeCun - Lead Meta AI Research, một trong 4 bố già Deep Learning
+Andrew Ng - Người thầy quốc dân, founder DeepLearning.ai
+AK - Một trong những nhà đưa tin nghiên cứu AI nhanh nhất
+
+
+Một vài nhân vật nổi tiếng trong cộng đồng:
+@Teknium1 - Co-founder Nous Research
+Yam Peleg - Senior Data Scientist
+Beff Jezos - Founder Extropic, công ty phần cứng AI
+clem - Founder & CEO HuggingFace
+Harrison Chase - Founder LangChain
 
 
 
