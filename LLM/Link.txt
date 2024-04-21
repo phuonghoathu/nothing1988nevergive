@@ -18,3 +18,26 @@ https://youtube.com/live/OgN87CFDLvc?feature=share
 Finetune với Unsloth
 https://youtu.be/Ujpwg98rHQg
 Colab: https://colab.research.google.com/drive/1CoWbYqJtAbdj5H63yshgy-6b08yWoywM
+Document:
+Buổi 1
+https://viblo.asia/p/langchain-la-gi-WR5JRBPQJGv 
+https://viblo.asia/p/chatgpt-series-5-tim-hieu-ve-retrieval-augmented-generation-rag-Ny0VGRd7LPA
+Buổi 2
+https://python.langchain.com/docs/use_cases/question_answering/quickstart/
+https://www.promptingguide.ai/research/rag
+https://python.langchain.com/docs/integrations/document_loaders/youtube_transcript/
+Buổi 3:
+https://www.deeplearning.ai/short-courses/building-evaluating-advanced-rag/
+https://www.datacamp.com/tutorial/open-ai-function-calling-tutorial
+Buổi 4:
+https://www.youtube.com/watch?v=aqdWSYWC_LI
+https://www.promptingguide.ai/research/llm-agents
+Buổi 5:
+https://www.youtube.com/watch?v=Xi9Ui-9qcPw
+https://www.langchain.com/langsmith
+Buổi 6:
+
+
+
+
+
