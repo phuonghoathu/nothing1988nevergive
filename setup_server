@@ -1,3 +1,25 @@
 
 yum update  -y
-other diff
+sudo apt-get update
+==============
+sudo adduser test01
+ssh test01@ip_address -p PORT
+
+============
+//Add user test01 ccó quyền sudo vowis ubuntu
+vào user có thể sudo
+sudo cp /etc/sudoers.d/vagrant /etc/sudoers.d/test01
+sudo vi /etc/sudoers.d/test01
+change vagrant thành test01 và ấn wq!
+===================
+//Reset pass
+sudo passwd -e test01
+// Gen key
+ssh-keygen
+Input path và passphase
+sau khi gen xong sẽ tạo ra 2 file xxx và xxx.pub
+Copy file .pub lên server
+
+
+
+

@@ -17,3 +17,121 @@ service restart sshd.service
 3. Cho phép user có quyền sudo
    3.1: visudo
    3.2 Thêm quyền ở line Allow root to run any commands here
+Để đảm bảo bảo mật cho VPS chạy Linux CentOS 7 hoặc 8, bạn có thể thực hiện các bước sau:
+
+1. **Cập nhật hệ thống**:
+   ```bash
+   sudo yum update -y
+   ```
+
+2. **Tạo người dùng mới**:
+   Không nên sử dụng tài khoản root để đăng nhập trực tiếp.
+   ```bash
+   sudo adduser username
+   sudo passwd username
+   sudo usermod -aG wheel username
+   ```
+
+3. **Cấu hình SSH**:
+   - **Thay đổi cổng SSH**:
+     Mở file cấu hình SSH:
+     ```bash
+     sudo vi /etc/ssh/sshd_config
+     ```
+     Thay đổi dòng `#Port 22` thành:
+     ```bash
+     Port 2200 (hoặc một cổng khác mà bạn muốn)
+     ```
+   - **Vô hiệu hóa đăng nhập root**:
+     Trong cùng file cấu hình SSH, tìm dòng `PermitRootLogin` và thay đổi thành:
+     ```bash
+     PermitRootLogin no
+     ```
+   - **Hạn chế đăng nhập qua mật khẩu**:
+     Để tăng cường bảo mật, chỉ cho phép đăng nhập qua khóa SSH. Thay đổi các dòng sau:
+     ```bash
+     PasswordAuthentication no
+     ```
+
+4. **Thiết lập tường lửa**:
+   - **Cài đặt firewalld** nếu chưa cài:
+     ```bash
+     sudo yum install firewalld
+     sudo systemctl start firewalld
+     sudo systemctl enable firewalld
+     ```
+   - **Mở các cổng cần thiết**:
+     ```bash
+     sudo firewall-cmd --permanent --add-port=2200/tcp (thay 2200 bằng cổng SSH bạn đã đặt)
+     sudo firewall-cmd --permanent --add-service=http
+     sudo firewall-cmd --permanent --add-service=https
+     sudo firewall-cmd --reload
+     ```
+
+5. **Cài đặt và cấu hình Fail2Ban**:
+   - **Cài đặt EPEL repository**:
+     ```bash
+     sudo yum install epel-release
+     ```
+   - **Cài đặt Fail2Ban**:
+     ```bash
+     sudo yum install fail2ban
+     ```
+   - **Cấu hình Fail2Ban**:
+     Tạo bản sao của file cấu hình mặc định:
+     ```bash
+     sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+     ```
+     Mở và chỉnh sửa file `jail.local` theo nhu cầu của bạn:
+     ```bash
+     sudo vi /etc/fail2ban/jail.local
+     ```
+     Đảm bảo kích hoạt bảo vệ cho dịch vụ SSH:
+     ```ini
+     [sshd]
+     enabled = true
+     port = 2200 (thay bằng cổng SSH bạn đã đặt)
+     ```
+   - **Khởi động và kích hoạt Fail2Ban**:
+     ```bash
+     sudo systemctl start fail2ban
+     sudo systemctl enable fail2ban
+     ```
+
+6. **Thiết lập SELinux**:
+   Đảm bảo rằng SELinux đang chạy ở chế độ enforced:
+   ```bash
+   sudo setenforce 1
+   ```
+   Kiểm tra trạng thái SELinux:
+   ```bash
+   sestatus
+   ```
+   Để thiết lập SELinux ở chế độ enforced vĩnh viễn, mở và chỉnh sửa file `/etc/selinux/config`:
+   ```bash
+   sudo vi /etc/selinux/config
+   ```
+   Đảm bảo dòng `SELINUX=enforcing` tồn tại.
+
+7. **Thiết lập tự động cập nhật**:
+   Cài đặt gói `yum-cron` để tự động cập nhật:
+   ```bash
+   sudo yum install yum-cron
+   sudo systemctl start yum-cron
+   sudo systemctl enable yum-cron
+   ```
+
+8. **Cài đặt và cấu hình antivirus** (nếu cần):
+   Bạn có thể cài đặt `ClamAV` để quét virus:
+   ```bash
+   sudo yum install epel-release
+   sudo yum install clamav clamd
+   sudo freshclam
+   sudo systemctl start clamd
+   sudo systemctl enable clamd
+   ```
+
+9. **Giám sát hệ thống**:
+   Cài đặt và cấu hình các công cụ giám sát như `psad`, `chkrootkit`, hoặc `tripwire` để phát hiện các hoạt động bất thường.
+
+Thực hiện các bước trên sẽ giúp bảo vệ VPS của bạn khỏi nhiều nguy cơ bảo mật. Tuy nhiên, bạn nên thường xuyên kiểm tra và cập nhật các biện pháp bảo mật theo khuyến nghị và các thay đổi mới nhất trong ngành.
