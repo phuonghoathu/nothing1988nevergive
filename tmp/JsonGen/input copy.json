@@ -1,0 +1,24 @@
+{
+    "name": "John",
+    "age": 30,
+    "isStudent": false,
+    "address": {
+      "city": "New York",
+      "zipcode": "10001"
+    },
+    "friends": ["Jane", "Doe"],
+    "projects": [
+      {
+        "name": "Project A",
+        "status": "Completed",
+        "datatype": {
+            "age": [12,3],
+            "tmp": "xxx"
+        }
+      },
+      {
+        "name": "Project B",
+        "status": "In Progress"
+      }
+    ]
+  }

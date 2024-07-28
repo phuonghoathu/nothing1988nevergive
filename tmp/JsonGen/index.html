@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSON Patterns Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .italic {
+            font-style: italic;
+        }
+    </style>
+    <script>
+        function toggleSkip(row) {
+            var nullSelect = row.querySelector('.null-select');
+            var skipCheckbox = row.querySelector('.skip-checkbox');
+            skipCheckbox.style.display = nullSelect.value === 'Null' ? 'block' : 'none';
+        }
+
+        function loadPatterns() {
+            fetch('output.txt')
+                .then(response => response.text())
+                .then(text => {
+                    const patterns = text.split('\n').filter(line => line.trim() !== '');
+                    const tbody = document.querySelector('tbody');
+
+                    patterns.forEach(pattern => {
+                        let [path, type] = pattern.split(':');
+                        const level = path.split('.').length - 1;
+
+                        // Remove _items from the path and make the path italic if it originally had _items
+                        let isItalic = false;
+                        if (path.includes('_items') && !path.endsWith('_items')) {
+                            path = path.replace('_items', '');
+                            isItalic = false;
+                        }
+                        if (path.includes('_items') && path.endsWith('_items')) {
+                            path = path.replace('_items', '');
+                            path = "--Inner " + path;
+                            isItalic = true;
+                        }
+
+                        // Replace _ with space for better readability
+                        const indentedPath = '&nbsp;'.repeat(level * 4) + path.replace(/_/g, ' ');
+
+                        const row = document.createElement('tr');
+                        if(isItalic) {
+                            row.style.backgroundColor = "powderblue";
+                            row.style.fontStyle = "Italic";
+                        }
+                        row.innerHTML = `
+                            <td>${indentedPath}</td>
+                            <td>${type}</td>
+                            <td>
+                                <select class="null-select" onchange="toggleSkip(this.parentElement.parentElement)">
+                                    <option value="Not null">Not null</option>
+                                    <option value="Null">Null</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="checkbox" class="skip-checkbox" style="display: none;">
+                            </td>
+                            <td><input type="text" name="max"></td>
+                            <td><input type="text" name="min"></td>
+                            <td><input type="text" name="default"></td>
+                            <td><input type="text" name="pattern"></td>
+                            <td><input type="text" name="listvalue"></td>
+                        `;
+
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error loading patterns:', error));
+        }
+
+        function generateJSON() {
+            const rows = document.querySelectorAll('tbody tr');
+            const items_list = [];
+            let idCounter = 1;
+
+            //rows.forEach(row => {
+            for(row in rows) {
+                const property = row.cells[0].textContent.trim();
+                const data_type = row.cells[1].textContent.trim();
+                const level = property == 'root' ? 0 : property.split('.').length + 1;
+                const parentId = level === 0 ? null : property.split('.').length == 0 ? 1 :findParentId(property, level - 1, items_list);
+                const isNull = row.querySelector('.null-select').value === 'Null';
+                const isSkip = row.querySelector('.skip-checkbox').checked;
+                const max = row.querySelector('input[name="max"]').value;
+                const min = row.querySelector('input[name="min"]').value;
+                const pattern = row.querySelector('input[name="pattern"]').value;
+                const listvalue = row.querySelector('input[name="listvalue"]').value.split(',');
+                if(property == 'root') {
+                    if(isNull) {
+                        if(isSkip) {
+                            // Tạo file json {}
+                        } else {
+                            // Tạo file json {null}
+                        }
+                    }
+                } else {
+
+                }
+                console.log(property)
+                if(!property.startsWith('--Inner') && !(property == 'root')) {
+                    const data_type = row.cells[1].textContent.trim();
+                    const level = property === '{}' || property == 'root' ? 0 : property.split('.').length;
+                    const parentId = level === 0 ? null : property.split('.').length == 0 ? 1 : findParentId(property, level - 1, items_list);
+                    const isNull = row.querySelector('.null-select').value === 'Null';
+                    const isSkip = row.querySelector('.skip-checkbox').checked;
+                    const max = row.querySelector('input[name="max"]').value;
+                    const min = row.querySelector('input[name="min"]').value;
+                    const pattern = row.querySelector('input[name="pattern"]').value;
+                    const listvalue = row.querySelector('input[name="listvalue"]').value.split(',');
+
+                    items_list.push({
+                        id: idCounter,
+                        property: property,
+                        data_type: data_type,
+                        level: level,
+                        parentId: parentId,
+                        desc: {
+                            pattern: pattern,
+                            max:            max,
+                            min: min,
+                            listvalue: listvalue,
+                            isNull: isNull,
+                            isSkip: isSkip
+                        }
+                    });
+
+                    idCounter++;            
+                }
+                
+            });
+
+            const output = { items_list: items_list };
+            const outputJSON = JSON.stringify(output, null, 4);
+            downloadJSON(outputJSON);
+        }
+
+        function findParentId(property, parentLevel, items_list) {
+            const parentPath = property.split('.').slice(0, parentLevel).join('.');
+            const parent = items_list.find(item => item.property === parentPath);
+            return parent ? parent.id : null;
+        }
+
+        function downloadJSON(json) {
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'output.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        window.onload = loadPatterns;
+    </script>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>JSON Path</th>
+                <th>Type</th>
+                <th>Attribute</th>
+                <th>Skip</th>
+                <th>Max</th>
+                <th>Min</th>
+                <th>Default</th>
+                <th>Pattern</th>
+                <th>List Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+    <button onclick="generateJSON()">Generate JSON</button>
+</body>
+</html>

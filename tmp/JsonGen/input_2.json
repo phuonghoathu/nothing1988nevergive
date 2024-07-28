@@ -1,0 +1,74 @@
+{
+    "items_list": [
+        {
+            "id": 1,
+            "property": "root",
+            "data_type": "object",
+            "level": 0,
+            "parentId": null,
+            "desc": {
+                "pattern": "",
+                "max": "",
+                "min": "",
+                "listvalue": [
+                    ""
+                ],
+                "isNull": false,
+                "isSkip": false
+            }
+        },
+        {
+            "id": 2,
+            "property": "name",
+            "data_type": "str",
+            "level": 1,
+            "parentId": null,
+            "desc": {
+                "pattern": "",
+                "max": 20,
+                "min": 10,
+                "listvalue": [
+                    "Jonathan",
+                    "Christopher"
+                ],
+                "isNull": false,
+                "isSkip": false
+            }
+        },
+        {
+            "id": 3,
+            "property": "age",
+            "data_type": "int",
+            "level": 1,
+            "parentId": null,
+            "desc": {
+                "pattern": "",
+                "max": 40,
+                "min": 20,
+                "listvalue": [
+                    ""
+                ],
+                "isNull": true,
+                "isSkip": false
+            }
+        },
+        {
+            "id": 4,
+            "property": "isStudent",
+            "data_type": "bool",
+            "level": 1,
+            "parentId": null,
+            "desc": {
+                "pattern": "",
+                "max": "",
+                "min": "",
+                "listvalue": [
+                    true,
+                    false
+                ],
+                "isNull": false,
+                "isSkip": false
+            }
+        }
+    ]
+}

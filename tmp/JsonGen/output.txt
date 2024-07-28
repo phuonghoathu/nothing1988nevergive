@@ -1,0 +1,14 @@
+root:object
+name:str
+age:int
+isStudent:bool
+friends:array
+friends_items:str
+projects:array
+projects_items:object
+projects_items.name:str
+projects_items.status:str
+projects_items.datatype:object
+projects_items.datatype.age:array
+projects_items.datatype.age_items:int
+projects_items.datatype.tmp:str
