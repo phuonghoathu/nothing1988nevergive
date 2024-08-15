@@ -1,0 +1,71 @@
+<div th:if="${validateForm}">
+		<form th:action="@{/processutgen}" th:object="${validateForm}" method="post">
+			<div th:each="classInfo : ${validateForm.lstClassInfo}">
+				<h2 th:text="${classInfo.className}">Class Name</h2>
+				<table border="1">
+					<thead>
+						<tr>
+							<th>Logic Name</th>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Array?</th>
+							<th>ArrayType</th>
+							<th>EnumClass</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="prop : ${classInfo.proInfos}">
+							<td th:text="${prop.propLogicName}"></td>
+							<td><a href="javascript:void(0);" th:text="${prop.propName}"
+								onclick="toggleNameDetails(this)"> <!-- Name -->
+							</a>
+								<table border="1" style="display: none;">
+									<thead>
+										<tr>
+											<th>Validate Name</th>
+											<th>Value</th>
+											<th>Error Code</th>
+											<th>Condition</th>
+										</tr>
+									</thead>
+									<tbody>
+										<!-- Populate with details -->
+										<tr th:each="validate : ${prop.validateInfo}">
+											<td th:text="${validate.type}"></td>
+											<td><input type="text" th:name="${validate.checkContent}"
+												th:value="${validate.checkContent}"></td>
+											<td><input type="text" th:value="${validate.errorCode}"></td>
+											<td><input type="text" th:value="${validate.condition}"></td>
+										</tr>
+									</tbody>
+								</table></td>
+							<td th:text="${prop.propType}">Type</td>
+							<td><input type="checkbox" disabled="disabled"
+								th:checked="${prop.isArray}" />
+								<div th:if="${prop.isArray}" onclick="toggleArrayDetails(this);"
+									style="display: inline;">View</div>
+								<table border="1" style="display: none;">
+									<thead>
+										<tr>
+											<th>Required</th>
+											<th>Maximum</th>
+											<th>Minimum</th>
+											<th>Condition</th>
+										</tr>
+									</thead>
+									<tbody>
+										<!-- Populate with array details if prop.isArray is true -->
+									</tbody>
+								</table></td>
+	
+							<td th:text="${prop.isArray ? prop.propTypeInArray : ''}">ArrayType</td>
+							<td
+								th:text="${prop.isArray ? (prop.propTypeInArray.contains('Enum') ? prop.propTypeInArray : '') : (prop.propType.contains('Enum') ? prop.propType : '')}">
+								EnumClass</td>
+						</tr>
+					</tbody>
+				</table>
+	
+			</div>
+		<button type="submit">Gen</button>
+	</form>
