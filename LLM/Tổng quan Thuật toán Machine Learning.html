@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<!-- saved from url=(0074)file:///C:/Users/ADMIN/Downloads/flowith_oracle_vspQmAk/vspQmAk/index.html -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng quan Thuật toán Machine Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Tổng quan Thuật toán Machine Learning_files/css2" rel="stylesheet">
+    <link rel="stylesheet" href="./Tổng quan Thuật toán Machine Learning_files/presentation.css">
+    <script src="./Tổng quan Thuật toán Machine Learning_files/saved_resource"></script>
+    <script src="./Tổng quan Thuật toán Machine Learning_files/gsap.min.js.tải xuống"></script>
+    <script src="./Tổng quan Thuật toán Machine Learning_files/lucide@latest"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async="" src="./Tổng quan Thuật toán Machine Learning_files/tex-mml-chtml.js.tải xuống"></script>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.bottom-4{bottom:1rem}.left-1\/2{left:50%}.z-10{z-index:10}.mx-auto{margin-left:auto;margin-right:auto}.my-1{margin-top:0.25rem;margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.inline-block{display:inline-block}.flex{display:flex}.hidden{display:none}.h-4{height:1rem}.h-5{height:1.25rem}.h-auto{height:auto}.w-4{width:1rem}.w-5{width:1.25rem}.w-full{width:100%}.min-w-\[1\.2em\]{min-width:1.2em}.max-w-4xl{max-width:56rem}.max-w-full{max-width:100%}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.cursor-text{cursor:text}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.list-none{list-style-type:none}.appearance-none{-webkit-appearance:none;appearance:none}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-1{gap:0.25rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.border-l-2{border-left-width:2px}.border-l-4{border-left-width:4px}.border-none{border-style:none}.border-blue-300{--tw-border-opacity:1;border-color:rgb(147 197 253 / var(--tw-border-opacity, 1))}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-black\/20{background-color:rgb(0 0 0 / 0.2)}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.pl-3{padding-left:0.75rem}.pl-4{padding-left:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-5xl{font-size:3rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.font-medium{font-weight:500}.italic{font-style:italic}.tracking-tight{letter-spacing:-0.025em}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-blue-200{--tw-text-opacity:1;color:rgb(191 219 254 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-sky-500{--tw-text-opacity:1;color:rgb(14 165 233 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-white\/80{color:rgb(255 255 255 / 0.8)}.text-white\/50{color:rgb(255 255 255 / 0.5)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.duration-300{transition-duration:300ms}.hover\:bg-white\/10:hover{background-color:rgb(255 255 255 / 0.1)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed}.disabled\:opacity-30:disabled{opacity:0.3}@media (min-width: 768px){.md\:w-1\/2{width:50%}.md\:text-6xl{font-size:3.75rem;line-height:1}.md\:text-7xl{font-size:4.5rem;line-height:1}.md\:text-xl{font-size:1.25rem;line-height:1.75rem}}</style><style data-spinner-hide="true">
+                #presentation-current-page-input::-webkit-outer-spin-button,
+                #presentation-current-page-input::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+            </style><style type="text/css">.CtxtMenu_InfoClose {  top:.2em; right:.2em;}
+.CtxtMenu_InfoContent {  overflow:auto; text-align:left; font-size:80%;  padding:.4em .6em; border:1px inset; margin:1em 0px;  max-height:20em; max-width:30em; background-color:#EEEEEE;  white-space:normal;}
+.CtxtMenu_Info.CtxtMenu_MousePost {outline:none;}
+.CtxtMenu_Info {  position:fixed; left:50%; width:auto; text-align:center;  border:3px outset; padding:1em 2em; background-color:#DDDDDD;  color:black;  cursor:default; font-family:message-box; font-size:120%;  font-style:normal; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 15px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius:15px;               /* Safari and Chrome */  -moz-border-radius:15px;                  /* Firefox */  -khtml-border-radius:15px;                /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color="gray", Positive="true"); /* IE */}
+</style><style type="text/css">.CtxtMenu_MenuClose {  position:absolute;  cursor:pointer;  display:inline-block;  border:2px solid #AAA;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  font-family: "Courier New", Courier;  font-size:24px;  color:#F0F0F0}
+.CtxtMenu_MenuClose span {  display:block; background-color:#AAA; border:1.5px solid;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  line-height:0;  padding:8px 0 6px     /* may need to be browser-specific */}
+.CtxtMenu_MenuClose:hover {  color:white!important;  border:2px solid #CCC!important}
+.CtxtMenu_MenuClose:hover span {  background-color:#CCC!important}
+.CtxtMenu_MenuClose:hover:focus {  outline:none}
+</style><style type="text/css">.CtxtMenu_Menu {  position:absolute;  background-color:white;  color:black;  width:auto; padding:5px 0px;  border:1px solid #CCCCCC; margin:0; cursor:default;  font: menu; text-align:left; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 5px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius: 5px;             /* Safari and Chrome */  -moz-border-radius: 5px;                /* Firefox */  -khtml-border-radius: 5px;              /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */}
+.CtxtMenu_MenuItem {  padding: 1px 2em;  background:transparent;}
+.CtxtMenu_MenuArrow {  position:absolute; right:.5em; padding-top:.25em; color:#666666;  font-family: null; font-size: .75em}
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow {color:white}
+.CtxtMenu_MenuArrow.CtxtMenu_RTL {left:.5em; right:auto}
+.CtxtMenu_MenuCheck {  position:absolute; left:.7em;  font-family: null}
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right:.7em; left:auto }
+.CtxtMenu_MenuRadioCheck {  position:absolute; left: .7em;}
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL {  right: .7em; left:auto}
+.CtxtMenu_MenuInputBox {  padding-left: 1em; right:.5em; color:#666666;  font-family: null;}
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL {  left: .1em;}
+.CtxtMenu_MenuComboBox {  left:.1em; padding-bottom:.5em;}
+.CtxtMenu_MenuSlider {  left: .1em;}
+.CtxtMenu_SliderValue {  position:absolute; right:.1em; padding-top:.25em; color:#333333;  font-size: .75em}
+.CtxtMenu_SliderBar {  outline: none; background: #d3d3d3}
+.CtxtMenu_MenuLabel {  padding: 1px 2em 3px 1.33em;  font-style:italic}
+.CtxtMenu_MenuRule {  border-top: 1px solid #DDDDDD;  margin: 4px 3px;}
+.CtxtMenu_MenuDisabled {  color:GrayText}
+.CtxtMenu_MenuActive {  background-color: #606872;  color: white;}
+.CtxtMenu_MenuDisabled:focus {  background-color: #E8E8E8}
+.CtxtMenu_MenuLabel:focus {  background-color: #E8E8E8}
+.CtxtMenu_ContextMenu:focus {  outline:none}
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus {  outline:none}
+.CtxtMenu_SelectionMenu {  position:relative; float:left;  border-bottom: none; -webkit-box-shadow:none; -webkit-border-radius:0px; }
+.CtxtMenu_SelectionItem {  padding-right: 1em;}
+.CtxtMenu_Selection {  right: 40%; width:50%; }
+.CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
+.CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
+.CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
+</style><style id="MJX-CHTML-styles">
+mjx-container[jax="CHTML"] {
+  line-height: 0;
+}
+
+mjx-container [space="1"] {
+  margin-left: .111em;
+}
+
+mjx-container [space="2"] {
+  margin-left: .167em;
+}
+
+mjx-container [space="3"] {
+  margin-left: .222em;
+}
+
+mjx-container [space="4"] {
+  margin-left: .278em;
+}
+
+mjx-container [space="5"] {
+  margin-left: .333em;
+}
+
+mjx-container [rspace="1"] {
+  margin-right: .111em;
+}
+
+mjx-container [rspace="2"] {
+  margin-right: .167em;
+}
+
+mjx-container [rspace="3"] {
+  margin-right: .222em;
+}
+
+mjx-container [rspace="4"] {
+  margin-right: .278em;
+}
+
+mjx-container [rspace="5"] {
+  margin-right: .333em;
+}
+
+mjx-container [size="s"] {
+  font-size: 70.7%;
+}
+
+mjx-container [size="ss"] {
+  font-size: 50%;
+}
+
+mjx-container [size="Tn"] {
+  font-size: 60%;
+}
+
+mjx-container [size="sm"] {
+  font-size: 85%;
+}
+
+mjx-container [size="lg"] {
+  font-size: 120%;
+}
+
+mjx-container [size="Lg"] {
+  font-size: 144%;
+}
+
+mjx-container [size="LG"] {
+  font-size: 173%;
+}
+
+mjx-container [size="hg"] {
+  font-size: 207%;
+}
+
+mjx-container [size="HG"] {
+  font-size: 249%;
+}
+
+mjx-container [width="full"] {
+  width: 100%;
+}
+
+mjx-box {
+  display: inline-block;
+}
+
+mjx-block {
+  display: block;
+}
+
+mjx-itable {
+  display: inline-table;
+}
+
+mjx-row {
+  display: table-row;
+}
+
+mjx-row > * {
+  display: table-cell;
+}
+
+mjx-mtext {
+  display: inline-block;
+}
+
+mjx-mstyle {
+  display: inline-block;
+}
+
+mjx-merror {
+  display: inline-block;
+  color: red;
+  background-color: yellow;
+}
+
+mjx-mphantom {
+  visibility: hidden;
+}
+
+_::-webkit-full-page-media, _:future, :root mjx-container {
+  will-change: opacity;
+}
+
+mjx-assistive-mml {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 1px 0px 0px 0px !important;
+  border: 0px !important;
+  display: block !important;
+  width: auto !important;
+  overflow: hidden !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+mjx-assistive-mml[display="block"] {
+  width: 100% !important;
+}
+
+mjx-c::before {
+  display: block;
+  width: 0;
+}
+
+.MJX-TEX {
+  font-family: MJXZERO, MJXTEX;
+}
+
+.TEX-B {
+  font-family: MJXZERO, MJXTEX-B;
+}
+
+.TEX-I {
+  font-family: MJXZERO, MJXTEX-I;
+}
+
+.TEX-MI {
+  font-family: MJXZERO, MJXTEX-MI;
+}
+
+.TEX-BI {
+  font-family: MJXZERO, MJXTEX-BI;
+}
+
+.TEX-S1 {
+  font-family: MJXZERO, MJXTEX-S1;
+}
+
+.TEX-S2 {
+  font-family: MJXZERO, MJXTEX-S2;
+}
+
+.TEX-S3 {
+  font-family: MJXZERO, MJXTEX-S3;
+}
+
+.TEX-S4 {
+  font-family: MJXZERO, MJXTEX-S4;
+}
+
+.TEX-A {
+  font-family: MJXZERO, MJXTEX-A;
+}
+
+.TEX-C {
+  font-family: MJXZERO, MJXTEX-C;
+}
+
+.TEX-CB {
+  font-family: MJXZERO, MJXTEX-CB;
+}
+
+.TEX-FR {
+  font-family: MJXZERO, MJXTEX-FR;
+}
+
+.TEX-FRB {
+  font-family: MJXZERO, MJXTEX-FRB;
+}
+
+.TEX-SS {
+  font-family: MJXZERO, MJXTEX-SS;
+}
+
+.TEX-SSB {
+  font-family: MJXZERO, MJXTEX-SSB;
+}
+
+.TEX-SSI {
+  font-family: MJXZERO, MJXTEX-SSI;
+}
+
+.TEX-SC {
+  font-family: MJXZERO, MJXTEX-SC;
+}
+
+.TEX-T {
+  font-family: MJXZERO, MJXTEX-T;
+}
+
+.TEX-V {
+  font-family: MJXZERO, MJXTEX-V;
+}
+
+.TEX-VB {
+  font-family: MJXZERO, MJXTEX-VB;
+}
+
+mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
+  font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A ! important;
+}
+
+@font-face /* 0 */ {
+  font-family: MJXZERO;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff") format("woff");
+}
+
+@font-face /* 1 */ {
+  font-family: MJXTEX;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");
+}
+
+@font-face /* 2 */ {
+  font-family: MJXTEX-B;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Bold.woff") format("woff");
+}
+
+@font-face /* 3 */ {
+  font-family: MJXTEX-I;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");
+}
+
+@font-face /* 4 */ {
+  font-family: MJXTEX-MI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Italic.woff") format("woff");
+}
+
+@font-face /* 5 */ {
+  font-family: MJXTEX-BI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-BoldItalic.woff") format("woff");
+}
+
+@font-face /* 6 */ {
+  font-family: MJXTEX-S1;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size1-Regular.woff") format("woff");
+}
+
+@font-face /* 7 */ {
+  font-family: MJXTEX-S2;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff") format("woff");
+}
+
+@font-face /* 8 */ {
+  font-family: MJXTEX-S3;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size3-Regular.woff") format("woff");
+}
+
+@font-face /* 9 */ {
+  font-family: MJXTEX-S4;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size4-Regular.woff") format("woff");
+}
+
+@font-face /* 10 */ {
+  font-family: MJXTEX-A;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_AMS-Regular.woff") format("woff");
+}
+
+@font-face /* 11 */ {
+  font-family: MJXTEX-C;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Regular.woff") format("woff");
+}
+
+@font-face /* 12 */ {
+  font-family: MJXTEX-CB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Bold.woff") format("woff");
+}
+
+@font-face /* 13 */ {
+  font-family: MJXTEX-FR;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Regular.woff") format("woff");
+}
+
+@font-face /* 14 */ {
+  font-family: MJXTEX-FRB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Bold.woff") format("woff");
+}
+
+@font-face /* 15 */ {
+  font-family: MJXTEX-SS;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Regular.woff") format("woff");
+}
+
+@font-face /* 16 */ {
+  font-family: MJXTEX-SSB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Bold.woff") format("woff");
+}
+
+@font-face /* 17 */ {
+  font-family: MJXTEX-SSI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Italic.woff") format("woff");
+}
+
+@font-face /* 18 */ {
+  font-family: MJXTEX-SC;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Script-Regular.woff") format("woff");
+}
+
+@font-face /* 19 */ {
+  font-family: MJXTEX-T;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff") format("woff");
+}
+
+@font-face /* 20 */ {
+  font-family: MJXTEX-V;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Regular.woff") format("woff");
+}
+
+@font-face /* 21 */ {
+  font-family: MJXTEX-VB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Bold.woff") format("woff");
+}
+</style></head>
+<body class="bg-slate-50 text-slate-800">
+    <main id="presentation-container">
+        
+        <!-- Slide 1: Title -->
+        <section class="presentation-slide flex flex-col justify-center items-center text-center bg-blue-600 text-white" style="opacity: 1; visibility: visible; pointer-events: auto; z-index: 2;">
+            <h1 data-animate="" class="text-5xl md:text-7xl font-bold tracking-tight">Tổng quan các Thuật toán Machine Learning Phổ biến</h1>
+            <p data-animate="" class="mt-6 text-lg md:text-xl text-blue-200">Một hành trình khám phá các công cụ cốt lõi của Trí tuệ Nhân tạo.</p>
+        </section>
+
+        <!-- Slide 2: Linear Regression - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750433549026-linear_regression_scatter_plot_illustration_index_0@1024x1024.png" alt="Linear Regression Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Hồi quy tuyến tính (Linear Regression)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Mô hình đơn giản, dễ hiểu và dễ diễn giải.</li>
+                        <li>Tính toán nhanh, không cần lặp.</li>
+                        <li>Hiệu quả cao với các mối quan hệ tuyến tính.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Không phù hợp với dữ liệu phi tuyến.</li>
+                        <li>Rất nhạy cảm với các giá trị ngoại lai (outliers).</li>
+                        <li>Dễ bị ảnh hưởng bởi hiện tượng đa cộng tuyến.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Kinh tế: Dự báo giá cổ phiếu, GDP.</li>
+                        <li>Kinh doanh: Dự báo doanh số bán hàng.</li>
+                        <li>Khoa học: Dự đoán các chỉ số khoa học.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Linear Regression - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Linear Regression - Ví dụ &amp; Công thức</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Dự đoán giá nhà. Ta có một tập dữ liệu về giá nhà cùng với diện tích của chúng. Hồi quy tuyến tính sẽ tìm ra một đường thẳng `Giá nhà = w₁ * Diện tích + w₀` sao cho đường thẳng này đi qua "gần nhất" với tất cả các điểm dữ liệu.
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Mô hình hồi quy:</strong> Tìm mối quan hệ tuyến tính giữa biến độc lập `x` và biến phụ thuộc `y`.</p>
+                <div class="formula-box"><span>\</span>[ <span>\</span>hat{y} = w_0 + w_1 x_1 + <span>\</span>dots + w_n x_n = <span>\</span>mathbf{w}^T <span>\</span>mathbf{x} <span>\</span>]</div>
+                <p class="mt-4 mb-2"><strong>Hàm mất mát (Mean Squared Error - MSE):</strong> Đo lường sai số giữa giá trị dự đoán và thực tế.</p>
+                <div class="formula-box"><span>\</span>[ L(<span>\</span>mathbf{w}) = <span>\</span>frac{1}{2N} <span>\</span>sum_{i=1}^N (y_i - <span>\</span>hat{y_i})^2 <span>\</span>]</div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Logistic Regression - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750433547790-logistic_regression_illustration_with_sigmoid_curve_index_1@1024x1024.png" alt="Logistic Regression Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Hồi quy Logistic (Logistic Regression)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Đơn giản, hiệu quả cho phân loại nhị phân.</li>
+                        <li>Đầu ra là xác suất, dễ diễn giải.</li>
+                        <li>Ít bị overfitting trong không gian đặc trưng thấp.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Chỉ tạo ranh giới quyết định tuyến tính.</li>
+                        <li>Giả định các đặc trưng đầu vào độc lập.</li>
+                        <li>Hiệu suất kém trên dữ liệu phức tạp.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Y tế: Chẩn đoán bệnh (có/không).</li>
+                        <li>Tài chính: Phát hiện gian lận, dự đoán vỡ nợ.</li>
+                        <li>Marketing: Phân loại email spam, dự đoán churn.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Logistic Regression - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Logistic Regression - Ví dụ &amp; Công thức</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Dự đoán một học sinh đỗ hay trượt kỳ thi dựa vào số giờ học. Hồi quy Logistic sẽ học một đường cong hình chữ S (Sigmoid) để biểu diễn xác suất đỗ. Nếu xác suất &gt; 0.5, phân loại là "Đỗ".
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Hàm Sigmoid:</strong> Chuyển đổi giá trị số sang xác suất (0, 1).</p>
+                <div class="formula-box"><span>\</span>[ <span>\</span>sigma(z) = <span>\</span>frac{1}{1 + e^{-z}} <span>\</span>quad <span>\</span>text{với } z = <span>\</span>mathbf{w}^T <span>\</span>mathbf{x} <span>\</span>]</div>
+                <p class="mt-4 mb-2"><strong>Hàm mất mát (Cross-Entropy Loss):</strong> Đo sự sai khác giữa xác suất dự đoán và nhãn thực tế.</p>
+                <div class="formula-box"><span>\</span>[ J(w) = -<span>\</span>frac{1}{N}<span>\</span>sum_{i=1}^N [y_i <span>\</span>log(<span>\</span>hat{y_i}) + (1-y_i) <span>\</span>log(1-<span>\</span>hat{y_i})] <span>\</span>]</div>
+            </div>
+        </section>
+
+        <!-- Slide 6: KNN - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750433548660-knearestneighborsalgorithmillustration_index_2@1024x1024.png" alt="KNN Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">K-Láng giềng gần nhất (KNN)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Rất đơn giản, trực quan, dễ triển khai.</li>
+                        <li>Không cần giai đoạn "huấn luyện" (lazy learning).</li>
+                        <li>Hiệu quả với dữ liệu có cấu trúc phức tạp.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Chi phí tính toán cao khi dự đoán.</li>
+                        <li>Nhạy cảm với đặc trưng không liên quan (cần chuẩn hóa).</li>
+                        <li>Hiệu suất giảm khi số chiều dữ liệu tăng.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Hệ thống gợi ý sản phẩm, phim ảnh.</li>
+                        <li>Nhận dạng mẫu, chữ viết tay.</li>
+                        <li>Phát hiện bất thường (anomaly detection).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: KNN - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">KNN - Ví dụ &amp; Công thức</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Phân loại một loại hoa mới. Tìm `K` (ví dụ `K=5`) bông hoa đã biết loài gần nhất. Nếu 4/5 "hàng xóm" gần nhất thuộc loài A, hoa mới sẽ được gán nhãn là loài A (biểu quyết theo số đông).
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Khoảng cách Euclidean:</strong> Đo sự "gần gũi" giữa hai điểm `p` và `q`.</p>
+                <div class="formula-box"><span>\</span>[ d(p, q) = <span>\</span>sqrt{<span>\</span>sum_{i=1}^{n} (p_i - q_i)^2} <span>\</span>]</div>
+                <p class="mt-4 mb-2"><strong>Nguyên tắc quyết định:</strong></p>
+                <ul class="list-disc list-inside">
+                    <li><strong>Phân loại:</strong> Biểu quyết theo số đông (Majority Voting).</li>
+                    <li><strong>Hồi quy:</strong> Lấy giá trị trung bình (Averaging).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 8: SVM - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750433555202-illustration_of_support_vector_machine_algorithm_index_3@1024x1024.png" alt="SVM Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Máy Vector hỗ trợ (SVM)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Rất hiệu quả trong không gian nhiều chiều.</li>
+                        <li>Tối ưu bộ nhớ (chỉ dùng vector hỗ trợ).</li>
+                        <li>Linh hoạt với "kernel trick" cho bài toán phi tuyến.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Kém hiệu quả trên tập dữ liệu rất lớn.</li>
+                        <li>Khó diễn giải, không cung cấp xác suất tự nhiên.</li>
+                        <li>Nhạy cảm với việc lựa chọn hàm kernel.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phân loại văn bản và hình ảnh.</li>
+                        <li>Tin sinh học: Phân loại protein, gen.</li>
+                        <li>Nhận dạng khuôn mặt.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: SVM - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">SVM - Ví dụ &amp; Công thức</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Phân loại hai loại quả (cam và chanh). SVM cố gắng tìm ra một "con đường" (lề - margin) rộng nhất có thể để phân tách hai nhóm. Các quả nằm trên mép của con đường này là "vector hỗ trợ".
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Mục tiêu:</strong> Tìm siêu phẳng (hyperplane) phân chia các lớp và tối đa hóa lề (margin) giữa chúng.</p>
+                <p class="mb-2"><strong>Bài toán tối ưu:</strong></p>
+                <div class="formula-box"><span>\</span>[ <span>\</span>min_{<span>\</span>mathbf{w}, b} <span>\</span>frac{1}{2} ||<span>\</span>mathbf{w}||^2 <span>\</span>]</div>
+                <p class="text-center my-1">sao cho</p>
+                <div class="formula-box"><span>\</span>[ y_i(<span>\</span>mathbf{w}^T <span>\</span>mathbf{x}_i + b) <span>\</span>geq 1, <span>\</span>forall i <span>\</span>]</div>
+            </div>
+        </section>
+
+        <!-- Slide 10: Decision Tree & Random Forest - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750433548352-decision_tree_algorithm_illustration_index_4@1024x1024.png" alt="Decision Tree &amp; Random Forest Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Cây quyết định &amp; Rừng ngẫu nhiên</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm (Random Forest)</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Giảm overfitting, cho độ chính xác cao.</li>
+                        <li>Xử lý tốt dữ liệu lớn, nhiều chiều, dữ liệu thiếu.</li>
+                        <li>Cung cấp thước đo mức độ quan trọng của đặc trưng.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Mô hình là "hộp đen", khó diễn giải.</li>
+                        <li>Đòi hỏi nhiều tài nguyên tính toán và bộ nhớ.</li>
+                        <li>Dự đoán chậm hơn mô hình đơn giản.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Tài chính: Đánh giá rủi ro tín dụng, phát hiện gian lận.</li>
+                        <li>Y tế: Chẩn đoán bệnh.</li>
+                        <li>Thương mại điện tử: Dự đoán hành vi mua hàng.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Decision Tree & Random Forest - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Random Forest - Ví dụ &amp; Nguyên lý</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Rừng ngẫu nhiên giống như một hội đồng gồm nhiều chuyên gia (Cây quyết định). Mỗi chuyên gia xem một phần thông tin và đưa ra ý kiến. Quyết định cuối cùng được đưa ra dựa trên biểu quyết của đa số.
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm chính</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Bagging (Bootstrap Aggregating):</strong> Tạo nhiều tập dữ liệu con bằng cách lấy mẫu có hoàn lại. Mỗi cây được huấn luyện trên một tập con.</li>
+                    <li><strong>Feature Randomness:</strong> Tại mỗi nút, chỉ một tập con đặc trưng được chọn ngẫu nhiên để tìm cách phân chia.</li>
+                    <li><strong>Tổng hợp kết quả:</strong> Biểu quyết theo số đông (Phân loại) hoặc lấy trung bình (Hồi quy).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 12: K-Means - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750433556600-kmeans_clustering_visualization_index_5@1024x1024.png" alt="K-Means Clustering Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Phân cụm K-Means (K-Means)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Đơn giản, dễ hiểu, tốc độ hội tụ nhanh.</li>
+                        <li>Hiệu quả về mặt tính toán trên tập dữ liệu lớn.</li>
+                        <li>Dễ dàng thích ứng và mở rộng.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phải xác định trước số cụm `K`.</li>
+                        <li>Nhạy cảm với việc khởi tạo tâm cụm ban đầu.</li>
+                        <li>Hoạt động kém với các cụm có hình dạng phức tạp.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phân khúc thị trường, khách hàng.</li>
+                        <li>Phân đoạn hình ảnh, nén ảnh.</li>
+                        <li>Tổ chức, gom nhóm tài liệu.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: K-Means - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">K-Means - Ví dụ &amp; Công thức</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Một cửa hàng muốn chia khách hàng thành 3 nhóm (`K=3`). Thuật toán sẽ lặp lại 2 bước: (1) Gán mỗi khách hàng vào nhóm có tâm cụm gần nhất. (2) Cập nhật lại tâm cụm bằng cách lấy trung bình các thành viên trong nhóm.
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Hàm mục tiêu (WCSS):</strong> Tối thiểu hóa tổng bình phương khoảng cách từ mỗi điểm đến tâm của cụm mà nó thuộc về.</p>
+                <div class="formula-box"><span>\</span>[ WCSS = <span>\</span>sum_{j=1}^K <span>\</span>sum_{x_i <span>\</span>in C_j} ||x_i - c_j||^2 <span>\</span>]</div>
+                 <ul class="list-none text-sm text-slate-600 mt-2">
+                    <li>`K`: số cụm</li>
+                    <li>`Cj`: tập hợp các điểm trong cụm j</li>
+                    <li>`cj`: tâm của cụm j</li>
+                 </ul>
+            </div>
+        </section>
+
+        <!-- Slide 14: Naive Bayes - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750434963869-naive_bayes_classification_diagram_index_0@1024x1024.png" alt="Naive Bayes Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Naive Bayes</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Đơn giản, nhanh chóng, dễ triển khai.</li>
+                        <li>Hiệu quả với dữ liệu lớn và nhiều chiều.</li>
+                        <li>Yêu cầu ít dữ liệu huấn luyện.</li>
+                        <li>Xử lý được cả dữ liệu rời rạc và liên tục.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Giả định "ngây thơ" về tính độc lập của các đặc trưng.</li>
+                        <li>Vấn đề "xác suất zero" nếu đặc trưng không có trong tập huấn luyện.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Lọc thư rác (Spam Filter).</li>
+                        <li>Phân loại văn bản, phân tích cảm xúc.</li>
+                        <li>Chẩn đoán y tế.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 15: Naive Bayes - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Naive Bayes - Ví dụ &amp; Công thức</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa: Lọc Email Spam</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Thuật toán học xác suất xuất hiện của các từ (ví dụ: "offer", "free") trong email "Spam" và "Không Spam" từ dữ liệu đã gán nhãn. Khi có email mới, nó tính xác suất email đó thuộc mỗi loại và chọn loại có xác suất cao nhất.
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Nền tảng:</strong> Định lý Bayes và giả định "ngây thơ" rằng các đặc trưng độc lập với nhau.</p>
+                <p class="mb-2"><strong>Công thức phân loại:</strong></p>
+                <div class="formula-box"><span>\</span>[ <span>\</span>text{Lớp dự đoán} = <span>\</span>underset{C}{<span>\</span>mathrm{argmax}} <span>\</span>left( P(C) <span>\</span>prod_{i=1}^{n} P(x_i|C) <span>\</span>right) <span>\</span>]</div>
+                <ul class="list-none text-sm text-slate-600 mt-2">
+                   <li>`P(C)`: Xác suất tiên nghiệm của lớp C.</li>
+                   <li>`P(xᵢ|C)`: Xác suất của đặc trưng xᵢ xuất hiện trong lớp C.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 16: Neural Network - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750435409429-basic_neural_network_architecture_illustration_index_0@1024x1024.png" alt="Neural Network Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Mạng Nơ-ron (Neural Networks)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Học các mối quan hệ phức tạp, phi tuyến.</li>
+                        <li>Khả năng khái quát hóa tốt trên dữ liệu mới.</li>
+                        <li>Tự động trích xuất đặc trưng.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Yêu cầu tài nguyên tính toán lớn.</li>
+                        <li>Tính "hộp đen", khó diễn giải.</li>
+                        <li>Dễ bị quá khớp (overfitting).</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Thị giác máy tính (nhận dạng ảnh, khuôn mặt).</li>
+                        <li>Xử lý ngôn ngữ tự nhiên (dịch máy, chatbot).</li>
+                        <li>Tài chính (dự báo thị trường, rủi ro tín dụng).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 17: Neural Network - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Mạng Nơ-ron - Nguyên tắc &amp; Ví dụ</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ: Phân loại Email (Spam/Không Spam)</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Mạng nơ-ron học cách nhận biết các mẫu liên quan đến spam. Lớp đầu nhận diện từ khóa ("miễn phí", "khuyến mãi"), lớp sâu hơn kết hợp các mẫu này để đưa ra xác suất email là spam. Nếu xác suất &gt; 0.8, email sẽ được phân loại là Spam.
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Nguyên tắc hoạt động chính</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Truyền tiến (Forward Propagation):</strong> Dữ liệu đi từ lớp vào đến lớp ra để tạo dự đoán. Tại mỗi nơ-ron, đầu vào được nhân với trọng số, cộng độ lệch và đi qua hàm kích hoạt.</li>
+                    <li><strong>Lan truyền ngược (Backpropagation):</strong> Tính toán sai số giữa dự đoán và thực tế, sau đó cập nhật các trọng số và độ lệch để giảm thiểu sai số này trong các lần lặp tiếp theo.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 18: CNN - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750435417994-convolutional_neural_network_architecture_illustration_index_1@1024x1024.png" alt="CNN Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Mạng Nơ-ron Tích chập (CNN)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Hiệu quả cao với dữ liệu hình ảnh, dạng lưới.</li>
+                        <li>Chia sẻ tham số, giảm số lượng tham số cần học.</li>
+                        <li>Bất biến với tịnh tiến (nhận diện vật thể ở vị trí khác).</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Kém hiệu quả với dữ liệu tuần tự (văn bản, chuỗi thời gian).</li>
+                        <li>Nhạy cảm với xoay và thay đổi tỷ lệ của đối tượng.</li>
+                        <li>Yêu cầu tập dữ liệu lớn được gán nhãn.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phân loại, định vị và phân đoạn hình ảnh.</li>
+                        <li>Nhận dạng khuôn mặt, xe tự lái.</li>
+                        <li>Phân tích hình ảnh y tế (phát hiện khối u).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 19: CNN - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">CNN - Cách hoạt động &amp; Ví dụ</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ: Nhận dạng Chữ số viết tay</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Các lớp Tích chập đầu tiên phát hiện các đặc trưng cấp thấp (cạnh, góc). Các lớp sau kết hợp chúng thành đặc trưng phức tạp hơn (vòng tròn). Cuối cùng, lớp kết nối đầy đủ sẽ phân loại hình ảnh là chữ số nào (0-9).
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Các lớp chính</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Lớp Tích chập (Convolutional Layer):</strong> Dùng các bộ lọc (filter) để trượt qua ảnh, phát hiện và tạo ra các bản đồ đặc trưng (feature map) như cạnh, màu sắc.</li>
+                    <li><strong>Lớp Gộp (Pooling Layer):</strong> Giảm kích thước của bản đồ đặc trưng (downsampling), giúp giảm tính toán và làm mô hình bất biến hơn với các thay đổi nhỏ.</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Slide 20: LLM / Transformer - Overview -->
+        <section class="presentation-slide layout-split items-center" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <div data-animate="" class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="./Tổng quan Thuật toán Machine Learning_files/1750435412409-transformer_architecture_illustration_for_large_language_models_index_2@1024x1024.png" alt="LLM &amp; Transformer Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">Mô hình Ngôn ngữ Lớn (LLM)</h2>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-up" class="lucide lucide-thumbs-up w-5 h-5 text-green-500"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Xử lý song song, huấn luyện nhanh hơn RNN.</li>
+                        <li>Hiểu ngữ cảnh dài nhờ cơ chế tự chú ý.</li>
+                        <li>Hiệu suất tăng mạnh khi mở rộng mô hình và dữ liệu.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="thumbs-down" class="lucide lucide-thumbs-down w-5 h-5 text-red-500"><path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path></svg> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Chi phí tính toán và huấn luyện khổng lồ.</li>
+                        <li>Có thể "ảo giác" (hallucinate) - tạo ra thông tin sai.</li>
+                        <li>Dễ tái tạo và khuếch đại các định kiến trong dữ liệu.</li>
+                    </ul>
+                </div>
+                <div data-animate="">
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="target" class="lucide lucide-target w-5 h-5 text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Trợ lý ảo thông minh (ChatGPT, Gemini).</li>
+                        <li>Sáng tạo nội dung (viết bài, email, kịch bản).</li>
+                        <li>Hỗ trợ lập trình (viết và gỡ lỗi mã nguồn).</li>
+                        <li>Tóm tắt văn bản và dịch máy chất lượng cao.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 21: LLM / Transformer - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-3xl font-bold text-blue-600 mb-4">LLM - Nguyên tắc hoạt động &amp; Ví dụ</h2>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ: Tạo văn bản (Text Generation)</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Từ một câu lệnh (prompt), mô hình dự đoán từ tiếp theo có khả năng xuất hiện nhất. Sau đó, nó thêm từ vừa dự đoán vào chuỗi và lặp lại quá trình, tạo ra một đoạn văn bản mạch lạc và phù hợp ngữ cảnh.
+                </blockquote>
+            </div>
+            <div data-animate="" class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Nguyên tắc cốt lõi: Cơ chế Tự chú ý (Self-Attention)</h3>
+                <p class="mb-2">Cho phép mô hình cân nhắc tầm quan trọng của các từ khác nhau trong câu khi xử lý một từ cụ thể. Nó giúp trả lời câu hỏi: "Khi xử lý từ này, tôi nên chú ý đến những từ nào khác?"</p>
+                <blockquote class="text-sm border-l-2 border-slate-300 pl-3 italic text-slate-500">
+                    Ví dụ: Trong câu "The robot picked up the ball because <strong>it</strong> was heavy", cơ chế tự chú ý giúp mô hình hiểu rằng "it" đề cập đến "<strong>ball</strong>" chứ không phải "robot".
+                </blockquote>
+            </div>
+        </section>
+
+
+        <!-- Slide 22: Conclusion -->
+        <section class="presentation-slide flex flex-col justify-center items-center text-center bg-slate-800 text-white" style="opacity: 0; visibility: hidden; pointer-events: none; z-index: 1;">
+            <h2 data-animate="" class="text-5xl md:text-6xl font-bold">Cảm ơn đã theo dõi!</h2>
+            <p data-animate="" class="mt-4 text-lg text-slate-300">Câu hỏi?</p>
+        </section>
+
+    </main>
+
+    <div id="presentation-navigation" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 px-2.5 py-1 rounded-full bg-black/20 backdrop-blur-sm transition-opacity duration-300" style="display: flex;">
+        <button id="presentation-prev-slide" class="p-1 rounded-full hover:bg-white/10 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed" aria-label="Previous slide" disabled="">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-left" class="lucide lucide-chevron-left w-4 h-4 text-white/80"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        
+        <div id="presentation-dots" class="flex gap-1.5 items-center"><div class="flex items-center gap-1 text-white/80 text-sm font-medium"><div class="inline-block"><span id="presentation-current-page" class="cursor-pointer hover:text-white transition-colors duration-200 inline-block text-center min-w-[1.2em]" aria-label="Click to jump to specific slide">1</span><input id="presentation-current-page-input" type="number" min="1" max="22" class="text-center bg-transparent text-white/80 hover:text-white border-none outline-none text-sm font-medium cursor-text min-w-[1.2em] appearance-none hidden"></div><span class="text-white/50">/</span><span class="text-white/80 inline-block text-center min-w-[1.2em]">22</span></div></div>
+        
+        <button id="presentation-next-slide" class="p-1 rounded-full hover:bg-white/10 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed" aria-label="Next slide">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-right" class="lucide lucide-chevron-right w-4 h-4 text-white/80"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+    </div>
+
+    <script src="./Tổng quan Thuật toán Machine Learning_files/presentation.js"></script>
+
+
+</body></html>
