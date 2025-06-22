@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng quan Thuật toán Machine Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="presentation.css">
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <main id="presentation-container">
+        
+        <!-- Slide 1: Title -->
+        <section class="presentation-slide flex flex-col justify-center items-center text-center bg-blue-600 text-white">
+            <h1 data-animate class="text-5xl md:text-7xl font-bold tracking-tight">Tổng quan các Thuật toán Machine Learning Phổ biến</h1>
+            <p data-animate class="mt-6 text-lg md:text-xl text-blue-200">Một hành trình khám phá các công cụ cốt lõi của Trí tuệ Nhân tạo.</p>
+        </section>
+
+        <!-- Slide 2: Linear Regression - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750433549026-linear_regression_scatter_plot_illustration_index_0@1024x1024.png" alt="Linear Regression Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Hồi quy tuyến tính (Linear Regression)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Mô hình đơn giản, dễ hiểu và dễ diễn giải.</li>
+                        <li>Tính toán nhanh, không cần lặp.</li>
+                        <li>Hiệu quả cao với các mối quan hệ tuyến tính.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Không phù hợp với dữ liệu phi tuyến.</li>
+                        <li>Rất nhạy cảm với các giá trị ngoại lai (outliers).</li>
+                        <li>Dễ bị ảnh hưởng bởi hiện tượng đa cộng tuyến.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Kinh tế: Dự báo giá cổ phiếu, GDP.</li>
+                        <li>Kinh doanh: Dự báo doanh số bán hàng.</li>
+                        <li>Khoa học: Dự đoán các chỉ số khoa học.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Linear Regression - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Linear Regression - Ví dụ & Công thức</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Dự đoán giá nhà. Ta có một tập dữ liệu về giá nhà cùng với diện tích của chúng. Hồi quy tuyến tính sẽ tìm ra một đường thẳng `Giá nhà = w₁ * Diện tích + w₀` sao cho đường thẳng này đi qua "gần nhất" với tất cả các điểm dữ liệu.
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Mô hình hồi quy:</strong> Tìm mối quan hệ tuyến tính giữa biến độc lập `x` và biến phụ thuộc `y`.</p>
+                <div class="formula-box">\\[ \\hat{y} = w_0 + w_1 x_1 + \\dots + w_n x_n = \\mathbf{w}^T \\mathbf{x} \\]</div>
+                <p class="mt-4 mb-2"><strong>Hàm mất mát (Mean Squared Error - MSE):</strong> Đo lường sai số giữa giá trị dự đoán và thực tế.</p>
+                <div class="formula-box">\\[ L(\\mathbf{w}) = \\frac{1}{2N} \\sum_{i=1}^N (y_i - \\hat{y_i})^2 \\]</div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Logistic Regression - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750433547790-logistic_regression_illustration_with_sigmoid_curve_index_1@1024x1024.png" alt="Logistic Regression Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Hồi quy Logistic (Logistic Regression)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Đơn giản, hiệu quả cho phân loại nhị phân.</li>
+                        <li>Đầu ra là xác suất, dễ diễn giải.</li>
+                        <li>Ít bị overfitting trong không gian đặc trưng thấp.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Chỉ tạo ranh giới quyết định tuyến tính.</li>
+                        <li>Giả định các đặc trưng đầu vào độc lập.</li>
+                        <li>Hiệu suất kém trên dữ liệu phức tạp.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Y tế: Chẩn đoán bệnh (có/không).</li>
+                        <li>Tài chính: Phát hiện gian lận, dự đoán vỡ nợ.</li>
+                        <li>Marketing: Phân loại email spam, dự đoán churn.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Logistic Regression - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Logistic Regression - Ví dụ & Công thức</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Dự đoán một học sinh đỗ hay trượt kỳ thi dựa vào số giờ học. Hồi quy Logistic sẽ học một đường cong hình chữ S (Sigmoid) để biểu diễn xác suất đỗ. Nếu xác suất > 0.5, phân loại là "Đỗ".
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Hàm Sigmoid:</strong> Chuyển đổi giá trị số sang xác suất (0, 1).</p>
+                <div class="formula-box">\\[ \\sigma(z) = \\frac{1}{1 + e^{-z}} \\quad \\text{với } z = \\mathbf{w}^T \\mathbf{x} \\]</div>
+                <p class="mt-4 mb-2"><strong>Hàm mất mát (Cross-Entropy Loss):</strong> Đo sự sai khác giữa xác suất dự đoán và nhãn thực tế.</p>
+                <div class="formula-box">\\[ J(w) = -\\frac{1}{N}\\sum_{i=1}^N [y_i \\log(\\hat{y_i}) + (1-y_i) \\log(1-\\hat{y_i})] \\]</div>
+            </div>
+        </section>
+
+        <!-- Slide 6: KNN - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750433548660-knearestneighborsalgorithmillustration_index_2@1024x1024.png" alt="KNN Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">K-Láng giềng gần nhất (KNN)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Rất đơn giản, trực quan, dễ triển khai.</li>
+                        <li>Không cần giai đoạn "huấn luyện" (lazy learning).</li>
+                        <li>Hiệu quả với dữ liệu có cấu trúc phức tạp.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Chi phí tính toán cao khi dự đoán.</li>
+                        <li>Nhạy cảm với đặc trưng không liên quan (cần chuẩn hóa).</li>
+                        <li>Hiệu suất giảm khi số chiều dữ liệu tăng.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Hệ thống gợi ý sản phẩm, phim ảnh.</li>
+                        <li>Nhận dạng mẫu, chữ viết tay.</li>
+                        <li>Phát hiện bất thường (anomaly detection).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: KNN - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">KNN - Ví dụ & Công thức</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Phân loại một loại hoa mới. Tìm `K` (ví dụ `K=5`) bông hoa đã biết loài gần nhất. Nếu 4/5 "hàng xóm" gần nhất thuộc loài A, hoa mới sẽ được gán nhãn là loài A (biểu quyết theo số đông).
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Khoảng cách Euclidean:</strong> Đo sự "gần gũi" giữa hai điểm `p` và `q`.</p>
+                <div class="formula-box">\\[ d(p, q) = \\sqrt{\\sum_{i=1}^{n} (p_i - q_i)^2} \\]</div>
+                <p class="mt-4 mb-2"><strong>Nguyên tắc quyết định:</strong></p>
+                <ul class="list-disc list-inside">
+                    <li><strong>Phân loại:</strong> Biểu quyết theo số đông (Majority Voting).</li>
+                    <li><strong>Hồi quy:</strong> Lấy giá trị trung bình (Averaging).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 8: SVM - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750433555202-illustration_of_support_vector_machine_algorithm_index_3@1024x1024.png" alt="SVM Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Máy Vector hỗ trợ (SVM)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Rất hiệu quả trong không gian nhiều chiều.</li>
+                        <li>Tối ưu bộ nhớ (chỉ dùng vector hỗ trợ).</li>
+                        <li>Linh hoạt với "kernel trick" cho bài toán phi tuyến.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Kém hiệu quả trên tập dữ liệu rất lớn.</li>
+                        <li>Khó diễn giải, không cung cấp xác suất tự nhiên.</li>
+                        <li>Nhạy cảm với việc lựa chọn hàm kernel.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phân loại văn bản và hình ảnh.</li>
+                        <li>Tin sinh học: Phân loại protein, gen.</li>
+                        <li>Nhận dạng khuôn mặt.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: SVM - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">SVM - Ví dụ & Công thức</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Phân loại hai loại quả (cam và chanh). SVM cố gắng tìm ra một "con đường" (lề - margin) rộng nhất có thể để phân tách hai nhóm. Các quả nằm trên mép của con đường này là "vector hỗ trợ".
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Mục tiêu:</strong> Tìm siêu phẳng (hyperplane) phân chia các lớp và tối đa hóa lề (margin) giữa chúng.</p>
+                <p class="mb-2"><strong>Bài toán tối ưu:</strong></p>
+                <div class="formula-box">\\[ \\min_{\\mathbf{w}, b} \\frac{1}{2} ||\\mathbf{w}||^2 \\]</div>
+                <p class="text-center my-1">sao cho</p>
+                <div class="formula-box">\\[ y_i(\\mathbf{w}^T \\mathbf{x}_i + b) \\geq 1, \\forall i \\]</div>
+            </div>
+        </section>
+
+        <!-- Slide 10: Decision Tree & Random Forest - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750433548352-decision_tree_algorithm_illustration_index_4@1024x1024.png" alt="Decision Tree & Random Forest Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Cây quyết định & Rừng ngẫu nhiên</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm (Random Forest)</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Giảm overfitting, cho độ chính xác cao.</li>
+                        <li>Xử lý tốt dữ liệu lớn, nhiều chiều, dữ liệu thiếu.</li>
+                        <li>Cung cấp thước đo mức độ quan trọng của đặc trưng.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Mô hình là "hộp đen", khó diễn giải.</li>
+                        <li>Đòi hỏi nhiều tài nguyên tính toán và bộ nhớ.</li>
+                        <li>Dự đoán chậm hơn mô hình đơn giản.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Tài chính: Đánh giá rủi ro tín dụng, phát hiện gian lận.</li>
+                        <li>Y tế: Chẩn đoán bệnh.</li>
+                        <li>Thương mại điện tử: Dự đoán hành vi mua hàng.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Decision Tree & Random Forest - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Random Forest - Ví dụ & Nguyên lý</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Rừng ngẫu nhiên giống như một hội đồng gồm nhiều chuyên gia (Cây quyết định). Mỗi chuyên gia xem một phần thông tin và đưa ra ý kiến. Quyết định cuối cùng được đưa ra dựa trên biểu quyết của đa số.
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm chính</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Bagging (Bootstrap Aggregating):</strong> Tạo nhiều tập dữ liệu con bằng cách lấy mẫu có hoàn lại. Mỗi cây được huấn luyện trên một tập con.</li>
+                    <li><strong>Feature Randomness:</strong> Tại mỗi nút, chỉ một tập con đặc trưng được chọn ngẫu nhiên để tìm cách phân chia.</li>
+                    <li><strong>Tổng hợp kết quả:</strong> Biểu quyết theo số đông (Phân loại) hoặc lấy trung bình (Hồi quy).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 12: K-Means - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750433556600-kmeans_clustering_visualization_index_5@1024x1024.png" alt="K-Means Clustering Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Phân cụm K-Means (K-Means)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Đơn giản, dễ hiểu, tốc độ hội tụ nhanh.</li>
+                        <li>Hiệu quả về mặt tính toán trên tập dữ liệu lớn.</li>
+                        <li>Dễ dàng thích ứng và mở rộng.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phải xác định trước số cụm `K`.</li>
+                        <li>Nhạy cảm với việc khởi tạo tâm cụm ban đầu.</li>
+                        <li>Hoạt động kém với các cụm có hình dạng phức tạp.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phân khúc thị trường, khách hàng.</li>
+                        <li>Phân đoạn hình ảnh, nén ảnh.</li>
+                        <li>Tổ chức, gom nhóm tài liệu.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: K-Means - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">K-Means - Ví dụ & Công thức</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Một cửa hàng muốn chia khách hàng thành 3 nhóm (`K=3`). Thuật toán sẽ lặp lại 2 bước: (1) Gán mỗi khách hàng vào nhóm có tâm cụm gần nhất. (2) Cập nhật lại tâm cụm bằng cách lấy trung bình các thành viên trong nhóm.
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Hàm mục tiêu (WCSS):</strong> Tối thiểu hóa tổng bình phương khoảng cách từ mỗi điểm đến tâm của cụm mà nó thuộc về.</p>
+                <div class="formula-box">\\[ WCSS = \\sum_{j=1}^K \\sum_{x_i \\in C_j} ||x_i - c_j||^2 \\]</div>
+                 <ul class="list-none text-sm text-slate-600 mt-2">
+                    <li>`K`: số cụm</li>
+                    <li>`Cj`: tập hợp các điểm trong cụm j</li>
+                    <li>`cj`: tâm của cụm j</li>
+                 </ul>
+            </div>
+        </section>
+
+        <!-- Slide 14: Naive Bayes - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750434963869-naive_bayes_classification_diagram_index_0@1024x1024.png" alt="Naive Bayes Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Naive Bayes</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Đơn giản, nhanh chóng, dễ triển khai.</li>
+                        <li>Hiệu quả với dữ liệu lớn và nhiều chiều.</li>
+                        <li>Yêu cầu ít dữ liệu huấn luyện.</li>
+                        <li>Xử lý được cả dữ liệu rời rạc và liên tục.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Giả định "ngây thơ" về tính độc lập của các đặc trưng.</li>
+                        <li>Vấn đề "xác suất zero" nếu đặc trưng không có trong tập huấn luyện.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Lọc thư rác (Spam Filter).</li>
+                        <li>Phân loại văn bản, phân tích cảm xúc.</li>
+                        <li>Chẩn đoán y tế.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 15: Naive Bayes - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Naive Bayes - Ví dụ & Công thức</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ minh họa: Lọc Email Spam</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Thuật toán học xác suất xuất hiện của các từ (ví dụ: "offer", "free") trong email "Spam" và "Không Spam" từ dữ liệu đã gán nhãn. Khi có email mới, nó tính xác suất email đó thuộc mỗi loại và chọn loại có xác suất cao nhất.
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Khái niệm và Công thức chính</h3>
+                <p class="mb-4"><strong>Nền tảng:</strong> Định lý Bayes và giả định "ngây thơ" rằng các đặc trưng độc lập với nhau.</p>
+                <p class="mb-2"><strong>Công thức phân loại:</strong></p>
+                <div class="formula-box">\\[ \\text{Lớp dự đoán} = \\underset{C}{\\mathrm{argmax}} \\left( P(C) \\prod_{i=1}^{n} P(x_i|C) \\right) \\]</div>
+                <ul class="list-none text-sm text-slate-600 mt-2">
+                   <li>`P(C)`: Xác suất tiên nghiệm của lớp C.</li>
+                   <li>`P(xᵢ|C)`: Xác suất của đặc trưng xᵢ xuất hiện trong lớp C.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 16: Neural Network - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750435409429-basic_neural_network_architecture_illustration_index_0@1024x1024.png" alt="Neural Network Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Mạng Nơ-ron (Neural Networks)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Học các mối quan hệ phức tạp, phi tuyến.</li>
+                        <li>Khả năng khái quát hóa tốt trên dữ liệu mới.</li>
+                        <li>Tự động trích xuất đặc trưng.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Yêu cầu tài nguyên tính toán lớn.</li>
+                        <li>Tính "hộp đen", khó diễn giải.</li>
+                        <li>Dễ bị quá khớp (overfitting).</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Thị giác máy tính (nhận dạng ảnh, khuôn mặt).</li>
+                        <li>Xử lý ngôn ngữ tự nhiên (dịch máy, chatbot).</li>
+                        <li>Tài chính (dự báo thị trường, rủi ro tín dụng).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 17: Neural Network - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Mạng Nơ-ron - Nguyên tắc & Ví dụ</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ: Phân loại Email (Spam/Không Spam)</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Mạng nơ-ron học cách nhận biết các mẫu liên quan đến spam. Lớp đầu nhận diện từ khóa ("miễn phí", "khuyến mãi"), lớp sâu hơn kết hợp các mẫu này để đưa ra xác suất email là spam. Nếu xác suất > 0.8, email sẽ được phân loại là Spam.
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Nguyên tắc hoạt động chính</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Truyền tiến (Forward Propagation):</strong> Dữ liệu đi từ lớp vào đến lớp ra để tạo dự đoán. Tại mỗi nơ-ron, đầu vào được nhân với trọng số, cộng độ lệch và đi qua hàm kích hoạt.</li>
+                    <li><strong>Lan truyền ngược (Backpropagation):</strong> Tính toán sai số giữa dự đoán và thực tế, sau đó cập nhật các trọng số và độ lệch để giảm thiểu sai số này trong các lần lặp tiếp theo.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 18: CNN - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750435417994-convolutional_neural_network_architecture_illustration_index_1@1024x1024.png" alt="CNN Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Mạng Nơ-ron Tích chập (CNN)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Hiệu quả cao với dữ liệu hình ảnh, dạng lưới.</li>
+                        <li>Chia sẻ tham số, giảm số lượng tham số cần học.</li>
+                        <li>Bất biến với tịnh tiến (nhận diện vật thể ở vị trí khác).</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Kém hiệu quả với dữ liệu tuần tự (văn bản, chuỗi thời gian).</li>
+                        <li>Nhạy cảm với xoay và thay đổi tỷ lệ của đối tượng.</li>
+                        <li>Yêu cầu tập dữ liệu lớn được gán nhãn.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Phân loại, định vị và phân đoạn hình ảnh.</li>
+                        <li>Nhận dạng khuôn mặt, xe tự lái.</li>
+                        <li>Phân tích hình ảnh y tế (phát hiện khối u).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 19: CNN - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">CNN - Cách hoạt động & Ví dụ</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ: Nhận dạng Chữ số viết tay</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Các lớp Tích chập đầu tiên phát hiện các đặc trưng cấp thấp (cạnh, góc). Các lớp sau kết hợp chúng thành đặc trưng phức tạp hơn (vòng tròn). Cuối cùng, lớp kết nối đầy đủ sẽ phân loại hình ảnh là chữ số nào (0-9).
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Các lớp chính</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Lớp Tích chập (Convolutional Layer):</strong> Dùng các bộ lọc (filter) để trượt qua ảnh, phát hiện và tạo ra các bản đồ đặc trưng (feature map) như cạnh, màu sắc.</li>
+                    <li><strong>Lớp Gộp (Pooling Layer):</strong> Giảm kích thước của bản đồ đặc trưng (downsampling), giúp giảm tính toán và làm mô hình bất biến hơn với các thay đổi nhỏ.</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Slide 20: LLM / Transformer - Overview -->
+        <section class="presentation-slide layout-split items-center">
+            <div data-animate class="flex justify-center items-center w-full md:w-1/2 p-4">
+                <img src="https://r2.flowith.net/files/o/1750435412409-transformer_architecture_illustration_for_large_language_models_index_2@1024x1024.png" alt="LLM & Transformer Illustration" class="max-w-full h-auto rounded-lg shadow-2xl object-cover bg-white p-2">
+            </div>
+            <div class="w-full md:w-1/2 p-4 space-y-6">
+                <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">Mô hình Ngôn ngữ Lớn (LLM)</h2>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-green-500"></i> Ưu điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Xử lý song song, huấn luyện nhanh hơn RNN.</li>
+                        <li>Hiểu ngữ cảnh dài nhờ cơ chế tự chú ý.</li>
+                        <li>Hiệu suất tăng mạnh khi mở rộng mô hình và dữ liệu.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="thumbs-down" class="w-5 h-5 text-red-500"></i> Nhược điểm</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Chi phí tính toán và huấn luyện khổng lồ.</li>
+                        <li>Có thể "ảo giác" (hallucinate) - tạo ra thông tin sai.</li>
+                        <li>Dễ tái tạo và khuếch đại các định kiến trong dữ liệu.</li>
+                    </ul>
+                </div>
+                <div data-animate>
+                    <h3 class="text-xl font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-sky-500"></i> Ứng dụng</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li>Trợ lý ảo thông minh (ChatGPT, Gemini).</li>
+                        <li>Sáng tạo nội dung (viết bài, email, kịch bản).</li>
+                        <li>Hỗ trợ lập trình (viết và gỡ lỗi mã nguồn).</li>
+                        <li>Tóm tắt văn bản và dịch máy chất lượng cao.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 21: LLM / Transformer - Details -->
+        <section class="presentation-slide layout-stack text-left max-w-4xl mx-auto">
+            <h2 data-animate class="text-3xl font-bold text-blue-600 mb-4">LLM - Nguyên tắc hoạt động & Ví dụ</h2>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-2">Ví dụ: Tạo văn bản (Text Generation)</h3>
+                <blockquote class="border-l-4 border-blue-300 pl-4 italic text-slate-600">
+                    Từ một câu lệnh (prompt), mô hình dự đoán từ tiếp theo có khả năng xuất hiện nhất. Sau đó, nó thêm từ vừa dự đoán vào chuỗi và lặp lại quá trình, tạo ra một đoạn văn bản mạch lạc và phù hợp ngữ cảnh.
+                </blockquote>
+            </div>
+            <div data-animate class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-2">Nguyên tắc cốt lõi: Cơ chế Tự chú ý (Self-Attention)</h3>
+                <p class="mb-2">Cho phép mô hình cân nhắc tầm quan trọng của các từ khác nhau trong câu khi xử lý một từ cụ thể. Nó giúp trả lời câu hỏi: "Khi xử lý từ này, tôi nên chú ý đến những từ nào khác?"</p>
+                <blockquote class="text-sm border-l-2 border-slate-300 pl-3 italic text-slate-500">
+                    Ví dụ: Trong câu "The robot picked up the ball because <strong>it</strong> was heavy", cơ chế tự chú ý giúp mô hình hiểu rằng "it" đề cập đến "<strong>ball</strong>" chứ không phải "robot".
+                </blockquote>
+            </div>
+        </section>
+
+
+        <!-- Slide 22: Conclusion -->
+        <section class="presentation-slide flex flex-col justify-center items-center text-center bg-slate-800 text-white">
+            <h2 data-animate class="text-5xl md:text-6xl font-bold">Cảm ơn đã theo dõi!</h2>
+            <p data-animate class="mt-4 text-lg text-slate-300">Câu hỏi?</p>
+        </section>
+
+    </main>
+
+    <div id="presentation-navigation" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 px-2.5 py-1 rounded-full bg-black/20 backdrop-blur-sm transition-opacity duration-300">
+        <button id="presentation-prev-slide" class="p-1 rounded-full hover:bg-white/10 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed">
+            <i data-lucide="chevron-left" class="w-4 h-4 text-white/80"></i>
+        </button>
+        
+        <div id="presentation-dots" class="flex gap-1.5 items-center">
+        </div>
+        
+        <button id="presentation-next-slide" class="p-1 rounded-full hover:bg-white/10 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed">
+            <i data-lucide="chevron-right" class="w-4 h-4 text-white/80"></i>
+        </button>
+    </div>
+
+    <script src="presentation.js"></script>
+</body>
+</html>
