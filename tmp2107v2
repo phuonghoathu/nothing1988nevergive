@@ -1,0 +1,138 @@
+Dưới đây là phiên bản extract_code.py để tích hợp vào hệ thống trích xuất PDF của bạn, có khả năng:
+
+Trích xuất toàn bộ nội dung theo thứ tự gốc hiển thị (text, image, v.v.) bằng PyMuPDF.
+
+Tự động nhận diện đoạn mã code dựa vào font monospace, cú pháp code, và bố cục dòng.
+
+
+
+---
+
+📁 extractor/extract_code.py
+
+import fitz  # PyMuPDF
+
+def is_monospace_font(font_name):
+    font_name = font_name.lower()
+    return any(monofont in font_name for monofont in ["mono", "courier", "consolas", "code"])
+
+def is_code_like_text(text):
+    lines = text.strip().split("\n")
+    if len(lines) < 2:
+        return False
+    code_keywords = ["if ", "for ", "while ", "def ", "class ", "{", "}", "import ", "console.", "System."]
+    code_score = sum(any(keyword in line for keyword in code_keywords) for line in lines)
+    return code_score / len(lines) > 0.5  # >= 50% dòng giống code
+
+def extract_content_with_code_detection(pdf_path, page_number):
+    doc = fitz.open(pdf_path)
+    page = doc[page_number]
+    blocks = page.get_text("dict")["blocks"]
+
+    extracted = []
+
+    for block in blocks:
+        bbox = block["bbox"]
+
+        if block["type"] == 0:  # Text block
+            full_text = ""
+            is_mono = False
+
+            for line in block["lines"]:
+                for span in line["spans"]:
+                    text = span["text"]
+                    font = span["font"]
+                    full_text += text + "\n"
+
+                    if is_monospace_font(font):
+                        is_mono = True
+
+            block_type = "code" if is_mono or is_code_like_text(full_text) else "text"
+
+            extracted.append({
+                "type": block_type,
+                "content": full_text.strip(),
+                "bbox": bbox
+            })
+
+        elif block["type"] == 1:  # Image block
+            extracted.append({
+                "type": "image",
+                "content": "Image block",
+                "bbox": bbox
+            })
+
+    return extracted
+
+
+---
+
+✅ Cách dùng trong main.py
+
+Thay vì gọi extract_text_by_page hay extract_images_by_page, bạn gọi 1 lần:
+
+from extractor.extract_code import extract_content_with_code_detection
+
+def extract_pdf_content(pdf_path):
+    doc = fitz.open(pdf_path)
+    final_output = []
+
+    for page_num in range(len(doc)):
+        print(f"Processing page {page_num + 1}")
+
+        # Tích hợp trích xuất text + image + code
+        elements = extract_content_with_code_detection(pdf_path, page_num)
+
+        # Sort theo top-down
+        ordered = sorted(elements, key=lambda x: (-x["bbox"][1], x["bbox"][0]))
+
+        final_output.append({
+            "page": page_num + 1,
+            "content": ordered
+        })
+
+    return final_output
+
+
+---
+
+🧪 Ví dụ kết quả (trích trang PDF có code):
+
+{
+  "page": 1,
+  "content": [
+    {
+      "type": "text",
+      "content": "Introduction to programming...",
+      "bbox": [...]
+    },
+    {
+      "type": "code",
+      "content": "def hello():\n    print('Hello world')",
+      "bbox": [...]
+    },
+    {
+      "type": "image",
+      "content": "Image block",
+      "bbox": [...]
+    }
+  ]
+}
+
+
+---
+
+📦 Tóm tắt
+
+Dùng PyMuPDF.get_text("dict") để đảm bảo thứ tự block đúng như PDF gốc.
+
+Dựa vào font và nội dung để nhận diện đoạn mã nguồn (code).
+
+Dễ mở rộng nếu bạn muốn xuất ra Markdown, JSON, HTML, hoặc đưa vào hệ thống RAG.
+
+
+
+---
+
+Bạn muốn mình zip lại project mẫu với toàn bộ thư mục extractor/ + main.py để bạn test nhanh không?
+
