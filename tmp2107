@@ -1,0 +1,200 @@
+Để xây dựng một cấu trúc source hoàn chỉnh dùng pdfminer, camelot, và PyMuPDF (fitz) để đọc và trích xuất nội dung từ PDF đúng thứ tự, bạn cần hiểu vai trò từng thư viện:
+
+
+---
+
+🔧 Vai trò của từng thư viện:
+
+Thư viện	Vai trò chính
+
+PyMuPDF	Đọc từng trang, trích xuất hình ảnh, định vị phần tử
+pdfminer	Trích xuất văn bản thô theo bố cục
+camelot	Trích xuất bảng biểu từ trang PDF
+
+
+
+---
+
+✅ Chiến lược xử lý đảm bảo đúng thứ tự:
+
+1. Duyệt theo thứ tự từng trang.
+
+
+2. Với mỗi trang:
+
+Dùng PyMuPDF để trích xuất kích thước, vị trí.
+
+Dùng Camelot để tìm và trích xuất bảng (nếu có).
+
+Dùng pdfminer để lấy nội dung chữ bình thường.
+
+
+
+3. Ghi chú lại vị trí theo tọa độ (bounding box) để sắp xếp lại thứ tự nội dung nếu cần.
+
+
+
+
+---
+
+🧱 Cấu trúc thư mục đề xuất:
+
+pdf_extractor/
+├── main.py                  # File chính
+├── extractor/
+│   ├── __init__.py
+│   ├── pdf_text.py          # Xử lý text bằng pdfminer
+│   ├── pdf_table.py         # Xử lý bảng bằng camelot
+│   ├── pdf_layout.py        # Xử lý vị trí, hình ảnh bằng pymupdf
+└── utils/
+    └── coordinate_utils.py  # Sắp xếp thứ tự theo tọa độ
+
+
+---
+
+📦 Cài đặt thư viện cần thiết
+
+pip install pdfminer.six camelot-py[cv] PyMuPDF
+
+
+---
+
+🧠 main.py – Phối hợp các thư viện
+
+from extractor.pdf_text import extract_text_by_page
+from extractor.pdf_table import extract_tables_by_page
+from extractor.pdf_layout import extract_images_by_page
+from utils.coordinate_utils import sort_elements_by_position
+
+import fitz
+
+def extract_pdf_content(pdf_path):
+    doc = fitz.open(pdf_path)
+    final_output = []
+
+    for page_num in range(len(doc)):
+        print(f"Processing page {page_num + 1}")
+
+        # 1. Extract text
+        texts = extract_text_by_page(pdf_path, page_num)
+
+        # 2. Extract tables
+        tables = extract_tables_by_page(pdf_path, page_num)
+
+        # 3. Extract images or layout info
+        images = extract_images_by_page(pdf_path, page_num)
+
+        # 4. Merge & sort by y-position (top-down)
+        combined = texts + tables + images
+        ordered = sort_elements_by_position(combined)
+
+        final_output.append({
+            "page": page_num + 1,
+            "content": ordered
+        })
+
+    return final_output
+
+
+---
+
+🧩 extractor/pdf_text.py
+
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer
+
+def extract_text_by_page(pdf_path, page_number):
+    elements = []
+    for i, page_layout in enumerate(extract_pages(pdf_path)):
+        if i != page_number:
+            continue
+        for element in page_layout:
+            if isinstance(element, LTTextContainer):
+                elements.append({
+                    "type": "text",
+                    "content": element.get_text(),
+                    "bbox": element.bbox  # (x0, y0, x1, y1)
+                })
+    return elements
+
+
+---
+
+📊 extractor/pdf_table.py
+
+import camelot
+
+def extract_tables_by_page(pdf_path, page_number):
+    tables = camelot.read_pdf(pdf_path, pages=str(page_number + 1))
+    table_elements = []
+    for table in tables:
+        table_elements.append({
+            "type": "table",
+            "content": table.df.to_json(),
+            "bbox": table._bbox  # (x1, y1, x2, y2)
+        })
+    return table_elements
+
+
+---
+
+🖼 extractor/pdf_layout.py
+
+import fitz
+
+def extract_images_by_page(pdf_path, page_number):
+    doc = fitz.open(pdf_path)
+    page = doc[page_number]
+    image_elements = []
+
+    for img in page.get_images(full=True):
+        xref = img[0]
+        bbox = page.get_image_bbox(img)
+        image_elements.append({
+            "type": "image",
+            "content": f"Image xref {xref}",
+            "bbox": bbox
+        })
+    return image_elements
+
+
+---
+
+📐 utils/coordinate_utils.py
+
+def sort_elements_by_position(elements):
+    return sorted(elements, key=lambda x: -x["bbox"][1])  # Y-axis descending
+
+
+---
+
+✅ Kết quả trả về (sample)
+
+[
+  {
+    "page": 1,
+    "content": [
+      {"type": "text", "content": "Introduction...", "bbox": [...]},
+      {"type": "table", "content": "...", "bbox": [...]},
+      {"type": "image", "content": "...", "bbox": [...]}
+    ]
+  }
+]
+
+
+---
+
+🎯 Lưu ý quan trọng:
+
+Thứ tự chính xác phụ thuộc vào bbox[1] (tọa độ y của nội dung). Phần tử nào có y lớn hơn thì ở trên.
+
+Camelot dùng OpenCV nên không hoạt động tốt nếu file scan là ảnh (phải OCR).
+
+Bạn có thể thêm OCR bằng pytesseract nếu cần.
+
+
+
+---
+
+Nếu bạn cần mình tạo một repo mẫu trên GitHub hoặc xuất zip hoàn chỉnh, mình có thể giúp bạn luôn. Bạn muốn mình thực hiện không?
+
