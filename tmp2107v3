@@ -1,0 +1,84 @@
+import fitz
+import camelot
+
+def is_code_block(text):
+    lines = text.strip().split("\n")
+    if len(lines) < 2:
+        return False
+
+    code_keywords = ["def ", "class ", "for ", "while ", "if ", "return ", "import ", "try:", "except"]
+    code_score = sum(any(keyword in line for keyword in code_keywords) for line in lines)
+    indented_lines = sum(1 for line in lines if line.startswith(" ") or line.startswith("\t"))
+
+    return (code_score + indented_lines) / len(lines) >= 0.5
+
+def extract_content_with_code_detection(pdf_path, page_number):
+    doc = fitz.open(pdf_path)
+    page = doc[page_number]
+    extracted = []
+
+    # 1. Extract text & code blocks
+    blocks = page.get_text("blocks")
+    for b in blocks:
+        x0, y0, x1, y1, text, _, _ = b
+        content = text.strip()
+        if not content:
+            continue
+
+        block_type = "code" if is_code_block(content) else "text"
+        extracted.append({
+            "type": block_type,
+            "content": content,
+            "bbox": (x0, y0, x1, y1)
+        })
+
+    # 2. Extract images
+    for img in page.get_images(full=True):
+        xref = img[0]
+        bbox = page.get_image_bbox(img)
+        extracted.append({
+            "type": "image",
+            "content": f"Image xref {xref}",
+            "bbox": bbox
+        })
+
+    # 3. Extract tables with Camelot
+    try:
+        tables = camelot.read_pdf(pdf_path, pages=str(page_number + 1), flavor="lattice")  # or stream
+        for table in tables:
+            table_data = table.df.to_csv(index=False)
+            # Tạm ước lượng bbox nếu Camelot không có bbox thật
+            bbox = (0, 0, 0, 0)
+            if hasattr(table, '_bbox') and table._bbox:
+                bbox = table._bbox
+
+            extracted.append({
+                "type": "table",
+                "content": table_data,
+                "bbox": bbox  # sẽ dùng để sort nếu cần
+            })
+    except Exception as e:
+        print(f"[!] Camelot error on page {page_number + 1}: {e}")
+
+    return extracted
+
+from extractor.extract_code import extract_content_with_code_detection
+
+def extract_pdf_content(pdf_path):
+    import fitz
+    doc = fitz.open(pdf_path)
+    final_output = []
+
+    for page_num in range(len(doc)):
+        print(f"Processing page {page_num + 1}")
+        elements = extract_content_with_code_detection(pdf_path, page_num)
+
+        # Sort theo top-down
+        ordered = sorted(elements, key=lambda x: (-x["bbox"][1], x["bbox"][0]))
+
+        final_output.append({
+            "page": page_num + 1,
+            "content": ordered
+        })
+
+    return final_output
