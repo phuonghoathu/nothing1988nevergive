@@ -1,0 +1,55 @@
+Rất hay 👌 — mình sẽ bổ sung luôn GAN (Generative Adversarial Network) vào bảng, vậy là mình có 5 kiến trúc chính: MLP, CNN, RNN/LSTM, Transformer, GAN.
+GAN hơi đặc biệt vì nó là một hệ thống gồm 2 mạng (Generator + Discriminator), chứ không chỉ một mạng đơn lẻ.
+
+
+---
+
+Bảng mở rộng: Các loại Layer trong 5 kiến trúc Neural Network
+
+Kiến trúc	Loại Layer	Mục đích / Chức năng
+
+MLP (Multilayer Perceptron)	Input Layer	Nhận vector đặc trưng (ảnh số hóa, dữ liệu tabular).
+	Dense (Fully Connected) Layer	Học quan hệ toàn cục giữa các đặc trưng.
+	Activation Layer (ReLU, Sigmoid, Tanh)	Tạo phi tuyến giúp mô hình học quan hệ phức tạp.
+	Output Layer (Softmax / Linear)	Xuất xác suất phân loại hoặc giá trị hồi quy.
+CNN (Convolutional Neural Network)	Input Layer (Ảnh)	Nhận dữ liệu ảnh (ma trận pixel).
+	Convolutional Layer	Học đặc trưng cục bộ (biên, hoa văn, hình dạng).
+	Pooling Layer (Max/Average)	Giảm kích thước không gian, tăng tính bất biến với dịch chuyển.
+	Dropout Layer	Giảm overfitting bằng cách ngẫu nhiên bỏ neuron.
+	Fully Connected Layer	Kết hợp đặc trưng thành quyết định cuối cùng.
+	Output Layer (Softmax)	Xuất nhãn ảnh.
+RNN / LSTM / GRU	Input Layer (Chuỗi)	Nhận dữ liệu chuỗi (văn bản, âm thanh, tín hiệu).
+	Embedding Layer	Biểu diễn token (từ, ký tự) thành vector liên tục.
+	Recurrent Layer (RNN/LSTM/GRU)	Ghi nhớ thông tin theo thời gian → học ngữ cảnh, quan hệ tuần tự.
+	Dropout / Normalization	Chống overfitting, giữ ổn định gradient.
+	Output Layer (Softmax / Linear)	Xuất chuỗi dự đoán (dịch, nhận dạng giọng nói, dự báo chuỗi).
+Transformer	Input Embedding Layer + Positional Encoding	Biểu diễn token + giữ thông tin thứ tự.
+	Multi-Head Self-Attention	Cho phép “nhìn” toàn bộ chuỗi cùng lúc, học quan hệ dài hạn.
+	Feed Forward Layer (Dense)	Xử lý đặc trưng từ Attention để học phi tuyến.
+	Residual Connection + Layer Normalization	Ổn định gradient, tăng tốc huấn luyện.
+	Stacked Transformer Blocks	Nhiều block lặp lại để học đặc trưng sâu.
+	Output Layer (Softmax)	Sinh chuỗi hoặc phân loại.
+GAN (Generative Adversarial Network)	Generator Input (Noise Vector)	Bắt đầu từ một vector ngẫu nhiên (thường từ phân phối chuẩn).
+	Generator Layers (Dense + Deconv/Transpose Conv)	Biến noise thành dữ liệu giả (ảnh, âm thanh, văn bản).
+	Discriminator Input (Real or Fake Data)	Nhận dữ liệu thật hoặc giả.
+	Discriminator Layers (CNN / Dense)	Phân biệt dữ liệu thật hay giả.
+	Output Layer (Sigmoid)	Xuất xác suất: thật (1) hoặc giả (0).
+
+
+
+---
+
+Nhận xét nhanh về GAN
+
+Generator: tạo dữ liệu giả nhưng giống thật.
+
+Discriminator: cố gắng nhận ra đâu là giả, đâu là thật.
+
+Quá trình huấn luyện → hai mạng "đấu trí", cuối cùng Generator sinh dữ liệu rất thật (ví dụ Deepfake, ảnh nghệ thuật AI).
+
+
+
+---
+
+👉 Bạn có muốn mình làm sơ đồ so sánh 5 kiến trúc này trên một slide (ví dụ kiểu infographic nhiều cột) để dễ nhìn trong bài giảng không?
+
