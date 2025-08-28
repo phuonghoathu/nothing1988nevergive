@@ -1,0 +1,468 @@
+Dưới đây là bản Chương 3 đầy đủ, viết theo phong cách giải thích logic, có công thức, code ví dụ và ý nghĩa thực tế. Mình sẽ chia thành nhiều phần cho dễ theo dõi:
+
+
+---
+
+CHƯƠNG 3: CÀI ĐẶT CƠ CHẾ ATTENTION
+
+
+---
+
+1. Bối cảnh và vai trò của Attention
+
+Trong ngôn ngữ, một từ có thể phụ thuộc vào các từ khác trong câu. Ví dụ:
+
+"The animal didn't cross the street because it was too tired."
+
+Từ “it” cần tham chiếu đến “the animal”, không phải “the street”.
+
+Mạng nơ-ron tuần tự (RNN, LSTM) gặp khó khăn trong việc giữ ngữ cảnh xa.
+
+Attention cho phép mô hình tập trung vào những phần quan trọng của câu, bất kể khoảng cách.
+
+
+Trong GPT, chúng ta sử dụng Self-Attention (Causal Attention) để:
+
+Mỗi token quan sát các token trước đó (không nhìn về tương lai).
+
+Học quan hệ ngữ nghĩa trong một chuỗi.
+
+
+
+---
+
+2. Cơ chế Attention cơ bản
+
+Công thức:
+
+Attention(Q, K, V) = softmax( (QK^T) / sqrt(dk) ) V
+
+Trong đó:
+
+Q (Query), K (Key), V (Value) là vector thu được từ embedding.
+
+dk là kích thước của key vector (dùng để chuẩn hóa).
+
+Bước thực hiện:
+
+1. Tính độ tương đồng giữa Q và K (QK^T).
+
+
+2. Chia cho √dk để tránh giá trị quá lớn.
+
+
+3. Áp dụng softmax → phân phối xác suất.
+
+
+4. Nhân với V để lấy thông tin tổng hợp.
+
+
+
+
+
+---
+
+3. Self-Attention trong GPT
+
+Self-Attention = Q, K, V đều xuất phát từ cùng một input.
+
+Ở mỗi bước, token hiện tại chỉ nhìn các token trước nó (Causal Masking).
+
+Dạng ma trận:
+
+
+[Token1, Token2, Token3]
+   ↓ (linear projection)
+Q, K, V
+   ↓ (Attention)
+Tích hợp ngữ cảnh vào biểu diễn từng token.
+
+
+---
+
+4. Multi-Head Attention
+
+Thay vì một bộ Q, K, V duy nhất → chia embedding thành nhiều “head”.
+
+Mỗi head học một khía cạnh quan hệ khác nhau (ngữ pháp, ngữ nghĩa).
+
+Sau khi tính attention cho từng head → ghép lại → chiếu tuyến tính.
+
+
+Công thức:
+
+MultiHead(Q,K,V) = Concat(head1, head2, ..., headh) * W^O
+
+
+---
+
+5. Masking trong GPT
+
+GPT là mô hình sinh văn bản theo chiều trái → phải.
+
+Khi dự đoán token thứ t, mô hình không được nhìn thấy token tương lai.
+
+Sử dụng Upper Triangular Mask:
+
+
+Mask[i,j] = -inf nếu j > i (ngăn nhìn về trước)
+
+Softmax sẽ loại bỏ các giá trị bị mask.
+
+
+---
+
+6. Dropout trong Attention
+
+Sau khi tính softmax(QK^T / √dk), thêm dropout để regularization.
+
+Giúp mô hình tránh overfitting.
+
+
+
+---
+
+7. Code minh họa Self-Attention
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class SelfAttention(nn.Module):
+    def __init__(self, embed_dim, num_heads):
+        super().__init__()
+        self.embed_dim = embed_dim
+        self.num_heads = num_heads
+        self.head_dim = embed_dim // num_heads
+
+        self.qkv_proj = nn.Linear(embed_dim, 3 * embed_dim)
+        self.out_proj = nn.Linear(embed_dim, embed_dim)
+
+    def forward(self, x):
+        B, T, C = x.shape  # Batch, Time, Channels
+        qkv = self.qkv_proj(x)  # (B,T,3C)
+        q, k, v = qkv.chunk(3, dim=-1)
+
+        # Reshape for multi-head
+        q = q.view(B, T, self.num_heads, self.head_dim).transpose(1, 2)
+        k = k.view(B, T, self.num_heads, self.head_dim).transpose(1, 2)
+        v = v.view(B, T, self.num_heads, self.head_dim).transpose(1, 2)
+
+        # Compute attention
+        att = (q @ k.transpose(-2, -1)) / (self.head_dim ** 0.5)
+
+        # Causal mask
+        mask = torch.tril(torch.ones(T, T)).to(x.device)
+        att = att.masked_fill(mask == 0, float('-inf'))
+
+        att = F.softmax(att, dim=-1)
+        att = F.dropout(att, p=0.1)
+
+        y = att @ v  # (B, num_heads, T, head_dim)
+        y = y.transpose(1, 2).contiguous().view(B, T, C)
+
+        return self.out_proj(y)
+
+
+---
+
+8. Ý nghĩa thực tế
+
+Self-Attention là nền tảng của GPT để hiểu ngữ cảnh.
+
+Multi-Head Attention giúp mô hình học nhiều quan hệ song song.
+
+Masking đảm bảo tính nhân quả (causal), phù hợp cho sinh văn bản.
+
+Attention thay thế hoàn toàn RNN trong GPT, giúp mô hình xử lý chuỗi dài hiệu quả.
+
+
+
+---
+
+Pipeline đến đây
+
+Text → Tokenization → Token IDs → Embeddings → Self-Attention (multi-head + mask) → (Transformer Blocks)
+
+
+---
+
+✅ Bạn có muốn mình viết tiếp Chương 4: Xây dựng mô hình GPT từ đầu theo kiểu này, có kiến trúc, code, luồng xử lý, và ý nghĩa thực tế, không?
+Hay gộp Chương 2 + 3 + 4 thành một file báo cáo hoàn chỉnh dạng Word/Markdown để bạn gửi sếp?
+
+
+
+Đúng rồi, trong Chương 2 ngoài tokenization còn có Embedding – đây là bước cực kỳ quan trọng vì nó biến token ID thành vector dense có ý nghĩa ngữ nghĩa.
+Mình sẽ bổ sung phần Embedding chi tiết ngay dưới dạng báo cáo để người đọc hiểu đầy đủ:
+
+
+---
+
+CHƯƠNG 2: XỬ LÝ VĂN BẢN THÀNH TOKEN & EMBEDDING
+
+
+---
+
+1. Bối cảnh và mục tiêu
+
+Trước khi đưa dữ liệu vào mô hình GPT, chúng ta phải:
+
+Chuyển văn bản thành chuỗi token.
+
+Ánh xạ token → số nguyên (token ID).
+
+Biến token ID thành embedding vector (đầu vào của mạng neural).
+
+
+
+---
+
+2. Tokenization (Như đã giải thích ở trên)
+
+Các bước chính:
+Text → Tokens → Token IDs
+
+
+---
+
+3. Embedding là gì?
+
+Sau khi có token ID (dạng số nguyên), mô hình không dùng trực tiếp mà ánh xạ thành vector liên tục (dense vector).
+
+Embedding vector biểu diễn ngữ nghĩa của token trong không gian nhiều chiều (vd: 768 chiều).
+
+Ý tưởng:
+
+Các từ có nghĩa gần nhau sẽ có vector gần nhau trong không gian.
+
+Ví dụ: "king" và "queen" có khoảng cách nhỏ hơn "king" và "banana".
+
+
+
+
+---
+
+4. Cách triển khai Embedding trong GPT
+
+GPT sử dụng hai loại embedding:
+
+1. Token Embedding: chuyển token ID thành vector.
+
+
+2. Positional Embedding: thêm thông tin vị trí của token trong chuỗi để mô hình hiểu thứ tự từ.
+
+
+
+4.1. Token Embedding
+
+Lớp nn.Embedding(vocab_size, embedding_dim) trong PyTorch.
+
+Ví dụ: nếu vocab_size = 50,000 và embedding_dim = 768 → embedding table có shape (50,000 × 768).
+
+
+4.2. Positional Embedding
+
+Vì Attention không có khái niệm vị trí, ta cần cộng vector vị trí vào embedding của token.
+
+Có hai cách:
+
+Positional Encoding (sin/cos) – như trong Transformer gốc.
+
+Learned Positional Embedding – GPT dùng cách này.
+
+
+
+
+---
+
+5. Code minh họa
+
+import torch
+import torch.nn as nn
+
+vocab_size = 50000
+embedding_dim = 768
+max_seq_len = 512
+
+# Token Embedding
+token_embedding = nn.Embedding(vocab_size, embedding_dim)
+
+# Positional Embedding
+pos_embedding = nn.Embedding(max_seq_len, embedding_dim)
+
+# Input IDs
+input_ids = torch.tensor([10, 20, 30])  # ví dụ 3 token
+
+# Lấy embedding
+tok_emb = token_embedding(input_ids)   # (3, 768)
+pos_ids = torch.arange(3)             # [0, 1, 2]
+pos_emb = pos_embedding(pos_ids)      # (3, 768)
+
+# Tổng hợp đầu vào
+x = tok_emb + pos_emb
+
+
+---
+
+6. Ý nghĩa thực tế
+
+Embedding giúp mô hình hiểu ngữ nghĩa thay vì chỉ nhìn ID rời rạc.
+
+Token Embedding = từ điển học được.
+
+Positional Embedding = đảm bảo mô hình phân biệt vị trí trong câu.
+
+
+
+---
+
+Pipeline sau Chương 2
+
+Text → Tokenization → Token IDs → Token Embedding + Positional Embedding → (Input cho Attention)
+
+
+---
+
+✅ Bây giờ bạn có muốn mình viết tiếp Chương 3 (Attention) theo phong cách tương tự – giải thích chi tiết + công thức + code + ý nghĩa thực tế không?
+Hay làm một bản gộp Chương 2 + Chương 3 + Chương 4 thành báo cáo hoàn chỉnh (Word hoặc Markdown) để bạn gửi cho sếp?
+
+
+
+Đây là bản viết lại đầy đủ và có logic của Chương 2 theo đúng nội dung trong tài liệu, được trình bày theo dạng báo cáo giải thích để người đọc hiểu và nắm được ý nghĩa thực tế:
+
+
+---
+
+CHƯƠNG 2: XỬ LÝ VĂN BẢN THÀNH TOKEN
+
+
+---
+
+1. Bối cảnh và mục tiêu
+
+Trước khi đưa văn bản vào mô hình ngôn ngữ (LLM), chúng ta cần chuyển đổi dữ liệu văn bản thành dạng số mà máy tính có thể xử lý. Quá trình này gọi là Tokenization.
+Mục tiêu:
+
+Hiểu tại sao cần tokenization.
+
+Nắm các phương pháp phổ biến để chia văn bản thành token.
+
+Thực hiện ánh xạ token thành ID và embedding vector.
+
+
+
+---
+
+2. Tại sao cần Tokenization?
+
+Máy tính không hiểu ngôn ngữ tự nhiên, nó chỉ làm việc với số. Do đó, một câu như:
+"Transformers are amazing."
+phải được chuyển thành một chuỗi các số nguyên (token ID) trước khi đưa vào mô hình.
+
+Tokenization giúp:
+
+Chuẩn hóa dữ liệu đầu vào.
+
+Tối ưu hóa dung lượng (không thể ánh xạ toàn bộ từ điển của nhân loại thành một-hot vectors quá lớn).
+
+Hỗ trợ xử lý ngôn ngữ đa dạng (tiếng Anh, tiếng Việt, ký tự đặc biệt, emoji...).
+
+
+
+---
+
+3. Các phương pháp Tokenization
+
+Có ba cách tiếp cận chính:
+
+3.1. Word-level Tokenization
+
+Chia theo từ. Ví dụ:
+
+Input: "I love AI"
+Tokens: ["I", "love", "AI"]
+
+Vấn đề: không xử lý tốt từ mới (OOV - Out of Vocabulary).
+
+
+3.2. Character-level Tokenization
+
+Chia theo từng ký tự.
+
+"I love" → ["I", " ", "l", "o", "v", "e"]
+
+Vấn đề: chuỗi rất dài, khó học ngữ nghĩa.
+
+
+3.3. Subword-level Tokenization (phổ biến nhất)
+
+Kết hợp ưu điểm của hai cách trên.
+
+Sử dụng thuật toán Byte Pair Encoding (BPE):
+
+Đếm cặp ký tự xuất hiện nhiều nhất.
+
+Gộp chúng thành một token.
+
+Lặp lại cho đến khi đạt số lượng token mong muốn.
+
+
+Ví dụ:
+
+"transformer" → ["trans", "form", "er"]
+
+Giúp mô hình hiểu cấu trúc từ và giảm OOV.
+
+
+
+---
+
+4. Ánh xạ từ Token đến ID và Embedding
+
+Sau khi tách token, chúng được ánh xạ thành ID (số nguyên) thông qua vocab dictionary.
+
+Ví dụ:
+
+"I" → 15, "love" → 78, "AI" → 130
+
+Cuối cùng, ID được đưa vào Embedding Layer để biến thành vector có kích thước cố định (vd: 768 chiều).
+
+
+
+---
+
+5. Code minh họa (BPE Tokenizer)
+
+Ví dụ Python:
+
+import tiktoken
+tokenizer = tiktoken.get_encoding("gpt2")
+text = "Transformers are amazing."
+tokens = tokenizer.encode(text)
+print(tokens)  # [15339, 389, 3302, 13]
+
+
+---
+
+6. Ý nghĩa thực tế
+
+Tokenization là bước đầu tiên trong pipeline của GPT.
+
+Chọn đúng phương pháp tokenization ảnh hưởng lớn đến hiệu suất mô hình.
+
+BPE (và các biến thể như SentencePiece) hiện là chuẩn cho hầu hết mô hình LLM.
+
+
+
+---
+
+Tóm tắt ngắn gọn
+
+Text → Tokenization → Token IDs → Embeddings → (đưa vào mô hình GPT)
+
+
+---
+
+👉 Bạn có muốn mình viết lại Chương 3 theo cách tương tự (đầy đủ logic, ví dụ code, ý nghĩa thực tế) không?
+Hay mình làm luôn Chương 2 + 3 + 4 thành một tài liệu thống nhất dạng báo cáo chuẩn?
+
