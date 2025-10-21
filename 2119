@@ -1,0 +1,718 @@
+Dưới đây là tài liệu training về Quantization (làm theo cấu trúc rõ ràng, từng phần) dựa trên bài viết “Model Compression for On-Device AI – Quantization” trên Aman AI Journal. Mình đã tổ chức sao cho dễ hiểu, đủ chi tiết, và bạn có thể sử dụng làm giáo trình hoặc tham khảo khi đào tạo. Nếu bạn muốn, mình có thể chuyển thành slide hoặc PDF.
+
+PHẦN 1: Giới thiệu & nền tảng
+
+1.1 Tại sao cần quantization
+
+Các mô hình hiện nay (đặc biệt LLM, Vision) rất lớn: có thể hàng trăm tỷ tham số. Ví dụ: mỗi tham số nếu lưu dưới dạng float32 (32 bit) thì chiếm 4 bytes. 
+
+Khi deploy lên thiết bị biên (edge devices) như điện thoại, IoT, tablet: bộ nhớ, độ trễ, công suất đều bị giới hạn. Việc tính toán, lưu trữ bằng precision cao (float32 hoặc hơn) trở nên khó khăn. 
+
+Quantization (giảm độ chính xác số học) là một trong các chiến lược chính để giảm kích thước mô hình, tăng tốc inference, tiết kiệm bộ nhớ và năng lượng. 
+
+
+1.2 Nền tảng về “precision” (độ chính xác số học)
+
+Trước khi hiểu quantization, cần nắm rõ cách máy tính biểu diễn số thực: chuẩn IEEE 754 floating-point. 
+
+Ví dụ:
+
+Double-precision (float64): 64 bit → sai số tối đa khoảng . 
+
+Single‐precision (float32): 32 bit → sai số tối đa khoảng . 
+
+Half‐precision (float16): 16 bit → sai số khoảng . 
+
+Bfloat16 (bfloat16): 16 bit nhưng có 8‐bit exponent như float32, mang lại phạm vi lớn hơn float16. 
+
+
+Vì vậy, nếu chúng ta “giảm” số bit dùng để biểu diễn, sẽ có hiệu ứng: giảm bộ nhớ, khả năng thực thi nhanh hơn, nhưng rủi ro mất chính xác cao hơn. Quantization tiếp nối ý này, nhưng đi xa hơn: từ float32 → float16 hoặc sang integer như int8, int4…
+
+
+1.3 Định nghĩa “Quantization”
+
+> Trong ngữ cảnh deep learning, quantization là quá trình giảm độ chính xác số học của tham số (weights) và/hoặc các tính toán trung gian (activations). Thường thì mô hình được huấn luyện và lưu dưới float32; quantization thay thế chúng bằng các biểu diễn độ chính xác thấp hơn – như float16, bfloat16, int8 hoặc thậm chí 4-bit hoặc nhị phân. 
+
+
+
+Mục tiêu chính: giảm kích thước mô hình, tăng hiệu suất inference, giảm tiêu thụ bộ nhớ & năng lượng, đặc biệt trên thiết bị có tài nguyên hạn chế. 
+
+Lưu ý: Quantization là hướng chủ yếu cho inference (không phải training), khác với Mixed Precision Training – mục tiêu của quantization và mixed precision hơi khác nhau. 
+
+
+
+---
+
+PHẦN 2: Các loại Quantization
+
+Trong phần này sẽ trình bày các loại cơ bản, cách chúng hoạt động, ưu/nạn.
+
+2.1 Phân loại chính
+
+Theo bài viết, có hai loại lớn:
+
+Floating-point quantization: giữ cấu trúc float (sign, exponent, mantissa) nhưng giảm số bit. Ví dụ: float32 → float16, bfloat16. 
+
+Integer quantization: chuyển sang biểu diễn integer (ví dụ int8, uint8) thông qua scale và zero-point. 
+
+
+2.1.1 Integer Quantization
+
+Mô tả: Ta có một phép biến đổi tuyến tính (linear mapping) với hai tham số: scale (hệ số nhân) và zero-point (điểm zero dịch). 
+
+Công thức:
+
+Quantize từ float → int:
+ 
+
+Dequantize (int → float):
+ 
+
+
+Ví dụ: nếu muốn map giá trị float trong khoảng  vào uint8 (0-255) thì:
+
+
+\text{scale} = \frac{1.0 - (-1.0)}{255 - 0} \approx 0.00784,\quad
+  \text{zero\_point} = \mathrm{round}\left(\tfrac{0 - (-1.0)}{0.00784}\right) = 128
+
+Lưu ý: Đây là dạng “asymmetric” (zero-point có thể khác 0) để xử lý phân bố dữ liệu không đối xứng.
+
+
+2.1.2 Non-Linear Integer Quantization Methods
+
+Không chỉ linear mapping. Một số kỹ thuật sử dụng mapping không tuyến tính để phù hợp hơn phân bố thực tế:
+
+Logarithmic quantization: cấp chia là lũy thừa của 2 (powers of two). 
+
+K-means/cluster-based quantization: chia giá trị float thành cluster rồi map mỗi weight tới centroid. 
+
+Learned transformations, như LSQ (Learned Step Size Quantization) và nuLSQ: bước kích thước (step size) hoặc mức chia (level spacing) được học qua backprop. 
+
+
+Những phương pháp này thường áp dụng cho quantization nặng hơn (như bit rất thấp) và cho weights/activations.
+
+
+2.1.3 Floating-Point Quantization
+
+Giảm bit-width trong cấu trúc floating point (ví dụ float32 → float16 hoặc bfloat16) bằng cách cắt/truncate hoặc làm tròn mantissa/exponent. 
+
+Vì vẫn là dạng float (có dấu, exponent), nên có thể sử dụng trực tiếp hardware float16/bfloat16 mà không cần chuyển sang integer domain. 
+
+Ví dụ: model.half() trong PyTorch để chuyển toàn bộ model sang float16. 
+
+
+2.2 So sánh từng loại
+
+Loại	Ưu điểm	Hạn chế
+
+Floating‐point quantization (e.g., float16)	Dễ thực hiện trên GPU, ít thay đổi logic, hỗ trợ hardware tensor cores	Giảm bit ít hơn (16bit vs 32bit) → lợi ích nhỏ hơn so int8 hoặc thấp hơn
+Integer quantization (int8, int4…)	Giảm kích thước lớn, hỗ trợ trên CPU/edge, speedup tốt	Cần mapping scale/zero-point, có thể phải calibration, risk mất accuracy cao hơn
+Non-linear integer quantization	Tối ưu hơn cho phân bố dữ liệu thực tế, đặc biệt bit thấp	Phức tạp hơn, implement khó hơn, hỗ trợ hardware không rộng rãi
+
+
+2.3 De-quantization và Considerations
+
+De-quantization: chuyển lại từ dạng integer (hoặc dạng thấp) → float nếu cần. Nhưng tùy workflow có thực hiện hay không. 
+
+Lưu ý:
+
+Trong integer‐only inference (trên CPU/edge) thì toàn bộ tính toán dùng int8, chỉ dequantization ở cuối (nếu cần logits) → tránh float toán giữa. 
+
+Trong workflow hỗn hợp (hybrid) có layer được quantize, layer khác vẫn float32/16 → sẽ cần dequantize giữa boundary layer quan trọng để tương thích. 
+
+Nếu chỉ sử dụng float16/bfloat16, dequantization thường không cần vì hardware hỗ trợ native. 
+
+
+
+
+---
+
+PHẦN 3: Workflows – cách triển khai quantization
+
+Có ba workflow chính được bài viết đề cập: Dynamic/Runtime Quantization, Post-Training Quantization (PTQ), Quantization-Aware Training (QAT). 
+
+3.1 Dynamic / Runtime Quantization
+
+Mô tả: Chỉ weights được quantize trước (ví dụ sang int8), còn activations vẫn giữ float32 cho tới khi thực thi, sau đó runtime mới quantize activations trước mỗi phép tính. 
+
+Kết quả: Giảm bộ nhớ model, tăng tốc inference; không cần calibration dataset hay fine-tune. 
+
+Hạn chế: Thường chỉ hiệu quả với mô hình “nặng weights” như Linear, RNN (ví dụ nn.Linear, nn.LSTM) – còn với convolution nặng activation thì hiệu quả kém hơn. 
+
+Ví dụ trong PyTorch:
+
+quantized_model = torch.ao.quantization.quantize_dynamic(
+    model_float32,
+    {torch.nn.Linear, torch.nn.LSTM},
+    dtype=torch.qint8
+)
+
+
+
+So sánh với PTQ: Dynamic không cần calibration observers, linh hoạt nhưng ít tối ưu hơn static quantization nếu muốn tăng tốc hơn. 
+
+
+3.2 Post-Training Quantization (PTQ)
+
+Mô tả: Sau khi model được huấn luyện xong (float32), ta thực hiện quantize cả weights và activations sang bit thấp (int8 etc.) mà không cần huấn luyện lại. Phải dùng dữ liệu calibration để tính scale/zero-point (và có thể histogram) cho activations. 
+
+Workflow trong PyTorch:
+
+1. Đặt model.qconfig = torch.quantization.get_default_qconfig(…)
+
+
+2. torch.quantization.prepare(model, inplace=True) → chèn observer modules
+
+
+3. Chạy calibration với tập dữ liệu đại diện
+
+
+4. torch.quantization.convert(model, inplace=True) → chuyển thành model quantized. 
+
+
+
+Ưu điểm: Đơn giản hơn QAT, tiết kiệm thời gian huấn luyện lại; có thể giảm size và tăng tốc tốt.
+
+Hạn chế: Mất độ chính xác nếu phân bố activations/weights quá khác biệt hoặc có outliers; calibrate không tốt sẽ ảnh hưởng lớn.
+
+Các kỹ thuật bổ sung để cải thiện PTQ: per‐channel quantization, percentile clipping, histograms, operator fusion. (Xem Phần 4) 
+
+
+3.3 Quantization-Aware Training (QAT)
+
+Mô tả: Trong quá trình huấn luyện/fine-tune, mô phỏng tác động của quantization (ví dụ fake quant modules) để mô hình học cách chịu đựng noise từ quantization tốt hơn. Sau đó convert model sang quantized. 
+
+Chi tiết:
+
+Trong forward pass: có thêm bước fake-quantize (như round(x/scale)+zero_point → dequantize) nhưng gradients vẫn được tính bằng float32. 
+
+Kết quả: Thường đạt độ chính xác sau quantization tốt hơn PTQ, đặc biệt khi bit thấp (4bit, 2bit) hoặc layer nhạy cảm (như attention). 
+
+
+Workflow PyTorch:
+
+1. model.qconfig = torch.quantization.get_default_qat_qconfig(…)
+
+
+2. torch.quantization.prepare_qat(model, inplace=True)
+
+
+3. Huấn luyện/fine-tune model như thường, với fake quant modules
+
+
+4. torch.quantization.convert(model.eval(), inplace=True)
+
+
+
+
+Khi nào dùng: Khi mức giảm bit rất thấp, hoặc muốn deploy mô hình nhạy với quantization/đòi hỏi độ chính xác cao.
+
+
+3.4 Khi nào chọn phương án nào?
+
+Nếu bạn có dữ liệu calibration nhưng không muốn huấn luyện lại → PTQ.
+
+Nếu bạn không có dữ liệu calibration hoặc muốn nhanh chóng thử nghiệm → Dynamic Quantization.
+
+Nếu bạn cần độ chính xác cao, hoặc đang làm bit rất thấp hoặc layer phức tạp → QAT.
+
+Ngoài ra, phải xem xét hỗ trợ hardware: liệu thiết bị của bạn có hỗ trợ int8, hay chỉ hỗ trợ float16?
+
+
+
+---
+
+PHẦN 4: Lợi ích và giới hạn + các chiến lược giảm thiểu rủi ro
+
+4.1 Lợi ích
+
+Kích thước mô hình giảm rõ rệt: ví dụ convert float32 → int8 giảm ~75% bộ nhớ lưu trữ. 
+
+Tăng tốc inference: trên phần cứng hỗ trợ, có thể tăng tốc từ ~2× đến ~4× so với precision cao hơn. 
+
+Giảm tiêu thụ bộ nhớ band-width, giảm tải bộ nhớ, có lợi cho edge, mobile, embedded devices. 
+
+
+4.2 Hạn chế / Thách thức
+
+Không phải mọi kiến trúc hoặc layer đều dễ quantize:
+
+Có thể có các thao tác, op (ví dụ group conv, custom layer, layer normalization) không hỗ trợ quantized format trên hardware hoặc framework. 
+
+Layer với phạm vi giá trị nhỏ hoặc có nhiều outlier rất nhạy với lỗi quantization. Ví dụ activations có outlier lớn → scale bị ảnh hưởng → mất chính xác lớn. 
+
+
+Khi sử dụng bit rất thấp hoặc quantize toàn bộ (weights+activations) mà không điều chỉnh → độ chính xác có thể giảm đáng kể.
+
+Hỗ trợ hardware và thư viện: một số hardware không hỗ trợ int4, int2 hoặc quantized ops cần fallback sang float32 → mất lợi ích.
+
+
+4.3 Mitigation Strategies (Chiến lược giảm thiểu)
+
+Granularity tốt hơn:
+
+Per-tensor quantization: một scale & zero-point cho toàn bộ tensor (nhanh và đơn giản) nhưng dễ mất chính xác khi phân bố dữ liệu rộng. 
+
+Per-layer quantization: mỗi layer có riêng scale/zero-point. 
+
+Per-channel quantization: mỗi kênh (output channel) có scale/zero‐point riêng – đặc biệt hiệu quả với conv hoặc linear nhiều kênh. 
+
+Per‐group quantization: chia kênh thành nhóm, mỗi nhóm chung scale/zero‐point – là 1 bước trung gian giữa per-channel và per-tensor. 
+
+
+Mixed-precision quantization: không phải tất cả layer đều quantize xuống bit thấp; giữ lại float32/float16 cho các layer nhạy cảm (ví dụ attention, layer norm) và quantize phần còn lại. 
+
+Clipping/outlier handling:
+
+Thay vì dùng toàn min/max (có thể bị outlier ảnh hưởng lớn), dùng percentile clipping (ví dụ 99.9% quantile) hoặc sử dụng histogram/KL divergence để chọn giới hạn. 
+
+
+Hỗ trợ hardware & thư viện: chọn thư viện, backend tối ưu (ví dụ PyTorch FBGEMM, QNNPACK) để tận dụng quantized kernel tốt. 
+
+
+
+---
+
+PHẦN 5: Weights vs Activations
+
+Điều quan trọng: weights và activations có đặc điểm khác nhau khi quantize.
+
+5.1 Weights (tham số mạng)
+
+Là tĩnh sau khi huấn luyện xong → phạm vi giá trị ổn định. Vì vậy có thể calibrate offline, sử dụng các chiến lược mạnh hơn (per-channel, non-linear, bit rất thấp). 
+
+Ví dụ: weights có thể được quantize thành int8, int4 hoặc thậm chí nhị phân trong các trường hợp hy sinh độ chính xác chấp nhận được.
+
+Việc đồ hóa lại: weights quantize offline → lưu trữ dạng kích thước nhỏ → inference nhanh hơn & ít bộ nhớ hơn.
+
+
+5.2 Activations (kích hoạt/intermediate)
+
+Là động: phụ thuộc vào input trong inference, nên giới hạn giá trị và phân bố thay đổi theo input. Vì vậy cần xử lý khác khi quantize. 
+
+Hai chế độ thường:
+
+Static activation quantization: thực hiện calibration trước để ước tính phạm vi (min/max hoặc histogram) của activations cho mỗi layer. Sau đó sử dụng scale/zero-point cố định cho inference. 
+
+Dynamic activation quantization: không cần calibration dataset; tại runtime, mỗi batch hoặc mỗi input đo phạm vi activations và tính scale/zero-point ngay trước tính toán. 
+
+
+Xử lý outlier quan trọng: nếu có giá trị activation ngoại lai lớn → nếu dùng toàn min/max sẽ khiến toàn bộ scale nhỏ → tất cả các giá trị khác bị thiếu chính xác. Vì vậy dùng chiến lược percentile-clipping, histogram, hay per-channel để giảm ảnh hưởng. 
+
+
+
+---
+
+PHẦN 6: Triển khai với PyTorch (ví dụ cụ thể)
+
+Dưới đây là các bước thực hiện với thư viện PyTorch – giúp học viên hiểu cách áp dụng thực tế.
+
+6.1 Các khái niệm trong PyTorch
+
+PyTorch hỗ trợ tensor quantized đặc biệt (ví dụ torch.qint8). 
+
+Backend hỗ trợ quantized kernel: ví dụ FBGEMM (x86／server) và QNNPACK (mobile/embedded) – PyTorch tự chọn backend dựa target. 
+
+Cần chú ý tới ổn định số học, đặc biệt khi dùng mixed-precision + quantization. PyTorch có module torch.cuda.amp để hỗ trợ mixed precision. 
+
+
+6.2 Workflow thực tế
+
+6.2.1 Dynamic quantization
+
+import torch
+from torch import nn
+from torch.ao.quantization import quantize_dynamic
+
+model.eval()
+quantized_model = quantize_dynamic(
+    model,
+    {nn.Linear, nn.LSTM},
+    dtype=torch.qint8
+)
+
+Sau đó dùng quantized_model(input_data) để inference; activations vẫn float32 tới khi tính toán, rồi bị quantize. 
+
+Ưu điểm: rất nhanh thực hiện, không cần calibration.
+
+Nhược: hỗ trợ ít loại layer (chủ yếu Linear/LSTM), hiệu quả tốt nhất trên mô hình NLP/trình tự. 
+
+
+6.2.2 Post-Training Quantization (PTQ)
+
+model.qconfig = torch.quantization.get_default_qconfig('fbgemm')
+torch.quantization.prepare(model, inplace=True)
+# chạy calibration với representative data
+# e.g., for imgs/batches: model(inputs)
+torch.quantization.convert(model, inplace=True)
+
+Các bước:
+
+1. Gán cấu hình quantization (qconfig) cho model.
+
+
+2. prepare() chèn observer modules (MinMaxObserver, HistogramObserver) để collect stats. 
+
+
+3. Chạy calibration bằng dữ liệu representative.
+
+
+4. convert() để tạo model quantized cuối cùng. 
+
+
+
+Sau convert, mô hình có thể dùng int8 toàn bộ (weights + activations) nếu hardware hỗ trợ.
+
+Cần chú ý: có thể phải fuse các module (Conv+BatchNorm+ReLU) để hiệu suất và ổn định tốt hơn. Ví dụ: torch.quantization.fuse_modules(...). 
+
+
+6.2.3 Quantization-Aware Training (QAT)
+
+model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')
+torch.quantization.prepare_qat(model, inplace=True)
+# huấn luyện/fine-tune model
+# ...
+model.eval()
+torch.quantization.convert(model, inplace=True)
+
+Sau khi prepare_qat, modules fake quant sẽ được chèn vào. Mô hình được fine-tune để thích ứng với quantization noise. 
+
+Khi kết thúc huấn luyện, convert model để có kernel quantized thực.
+
+Dùng khi môi trường yêu cầu độ chính xác cao hoặc quantize mạnh (bit thấp).
+
+
+
+---
+
+PHẦN 7: Tóm tắt & gợi ý thực hành
+
+7.1 Tóm tắt nhanh
+
+Quantization = giảm độ chính xác số học → lợi ích lớn về tốc độ, bộ nhớ.
+
+Có nhiều phương pháp: floating‐point quantization, integer quantization, non-linear quantization.
+
+Triển khai bằng nhiều workflows: dynamic, PTQ, QAT.
+
+Cần chú trọng weights và activations vì khác nhau.
+
+Có nhiều chiến lược để giảm thiểu mất mát độ chính xác: per-channel, per-group, clipping, mixed precision…
+
+Framework như PyTorch hỗ trợ tốt: dynamic, PTQ, QAT đều có API.
+
+
+7.2 Gợi ý thực hành/hướng dẫn cho học viên
+
+Bước 1: Chọn một mô hình nhỏ (ví dụ ResNet hoặc BERT nhỏ) và triển khai PTQ: chạy chuẩn calibration, convert và đo hiệu suất, độ chính xác so với bản float32.
+
+Bước 2: Thử dynamic quantization cho mô hình NLP (ví dụ transformer) để so sánh.
+
+Bước 3: Nếu muốn thử độ khó hơn: áp dụng QAT cho mô hình hoặc thử quantize xuống int4 nếu framework hỗ trợ.
+
+Bước 4: Khảo sát phần weights vs activations: đo phân bố activations, xem có outlier hay không, thử per-channel quantization so với per-tensor, đo sự khác biệt.
+
+Bước 5: Đọc thêm về các phương pháp hiện đại (Advanced Quantization Techniques) — sẽ học phần nâng cao.
+
+
+
+---
+
+PHẦN 8: Kết luận
+
+Quantization là một công cụ rất mạnh để làm cho mô hình AI lớn có thể chạy trên thiết bị biên, hoặc giảm chi phí hạ tầng. Tuy nhiên, để áp dụng thành công, cần hiểu rõ các trade-off giữa độ chính xác và hiệu suất, chọn workflow và độ granularity phù hợp, và dùng thư viện/hardware hỗ trợ tốt. Việc đào tạo và thực hành sẽ giúp nắm vững và triển khai đúng cách.
+
+
+---
+
+Nếu bạn muốn, mình có thể chuẩn bị phần nâng cao về các kỹ thuật hiện đại được đề cập trong bài viết (như AWQ – Activation-Aware Weight Quantization, SmoothQuant, GPTQ, Mixed-Precision Quantization, v.v) — và kèm theo case study + mã mẫu. Bạn có muốn không?
+
+
+
+Tuyệt — mình sẽ viết tiếp phần Knowledge Distillation (Distillation) từ trang Aman.ai thật chi tiết, sát tài liệu gốc, và theo kiểu tài liệu training (dễ theo dõi, có công thức, ví dụ, checklist triển khai). Mình sẽ bao gồm: khái niệm, cơ chế toán học, các dạng chính, các chế độ distillation, lý do hiệu quả, hướng dẫn thực hành (loss, siêu-tham số, workflow), mẹo xử lý lỗi, case-study ngắn và cách kết hợp distillation với các phương pháp nén khác. Mình cũng trích dẫn nguồn chính từ trang Aman.ai cho các phần quan trọng.
+
+
+---
+
+Knowledge Distillation — Tài liệu training chi tiết
+
+1. Tổng quan ngắn
+
+Knowledge distillation là kỹ thuật nén mô hình bằng cách huấn luyện một mô hình nhỏ hơn (student) để bắt chước hành vi của một mô hình lớn hơn, đã được huấn luyện (teacher). Mục tiêu: giảm kích thước / latency nhưng vẫn giữ lại nhiều khả năng suy đoán của teacher. 
+
+
+---
+
+2. Cơ chế (Mechanism) — toán học và trực quan
+
+2.1 Ý tưởng chính
+
+Thay vì chỉ dùng nhãn cứng (one-hot) như supervised learning, distillation tận dụng soft targets — phân phối xác suất của teacher — vì chúng chứa thông tin về mối quan hệ giữa các lớp (ví dụ: teacher cho thấy “cat” có xác suất thấp cho “tiger” → biểu diễn tương đồng). 
+
+
+2.2 Hàm mất mát điển hình (composite loss)
+
+Student được huấn luyện bằng hàm mất mát kết hợp:
+
+L = \alpha \cdot L_{\text{hard}} + (1-\alpha) \cdot L_{\text{distill}}
+
+ = cross-entropy với ground-truth (nhãn cứng).
+
+ là KL divergence giữa phân phối của teacher (logits ) và student (logits ) sau khi tăng nhiệt độ .
+
+ (temperature) > 1 làm “làm mềm” phân phối, giúp lộ ra sự tương đồng giữa lớp;  cân bằng hai nguồn siêu giám sát. 
+
+
+2.3 Hiệu ứng của Temperature
+
+Khi  tăng, softmax đầu ra trở nên “mềm” hơn (xác suất lan rộng vào lớp không phải top-1), giúp student học các tín hiệu tinh tế.
+
+Lưu ý: khi tính gradient thường nhân hệ số  vào phần loss distillation để cân bằng độ lớn gradient (tùy cách cài đặt).
+
+
+
+---
+
+3. Các loại Knowledge Distillation
+
+Aman.ai phân nhóm chính thành 3 dạng lớn — mình mô tả cụ thể và khi nào dùng.
+
+3.1 Response-Based Distillation (Output / Logits Matching)
+
+Ý tưởng: Student học để khớp phân phối output cuối cùng (logits / probabilities) của teacher.
+
+Ưu điểm: Đơn giản, ít tốn chi phí tính toán cho teacher (có thể precompute logits). Được dùng rộng rãi (ví dụ DistilBERT, TinyBERT). 
+
+Khi dùng: classification, NLP, khi không cần bắt chước nội bộ của teacher.
+
+
+3.2 Feature-Based Distillation (Intermediate Representations)
+
+Ý tưởng: Student học để khớp các biểu diễn ẩn (hidden states, feature maps) của teacher ở một hoặc nhiều tầng.
+
+Ứng dụng: computer vision (giữ thông tin không gian), các tác vụ cần biểu diễn trung gian giống teacher. Ví dụ FitNets (hints). 
+
+Lưu ý: cần căn tầng tương ứng giữa teacher và student; nếu kiến trúc khác biệt, có thể dùng projector (1×1 conv hoặc linear) để map kích thước.
+
+
+3.3 Relation-Based Distillation
+
+Ý tưởng: Student học quan hệ giữa mẫu trong không gian đặc trưng của teacher (ví dụ: khoảng cách, góc, tương tự).
+
+Ứng dụng: metric learning, ranking, nơi cấu trúc tập mẫu quan trọng. Ví dụ Relational KD. 
+
+
+
+---
+
+4. Chế độ distillation (Modes)
+
+4.1 Offline Distillation
+
+Teacher đã được huấn luyện và đóng băng; student train dựa trên outputs đã tính trước hoặc bằng cách truy vấn teacher trong quá trình train. Đây là cách phổ biến trong công nghiệp. 
+
+
+4.2 Online Distillation
+
+Teacher và student cùng huấn luyện song song; teacher có thể tiến hóa, đôi khi là ensemble (multiple students teach nhau). Phức tạp hơn nhưng cho phép knowledge flow linh hoạt. 
+
+
+4.3 Self-Distillation
+
+Teacher và student cùng kiến trúc; teacher là một version ”tốt hơn” của student (ví dụ moving-average của weights). Đã chứng minh cải thiện hiệu suất ngay cả khi không nén kích thước. 
+
+
+
+---
+
+5. Tại sao distillation hiệu quả? (Intuition & Theory)
+
+Soft targets chứa thông tin cấu trúc lớp: teacher cung cấp tín hiệu “mềm” giúp student nhận biết mối liên hệ các lớp (ví dụ cat vs tiger). 
+
+Lý thuyết ensemble / multi-view: distillation cho phép student bắt chước hành vi như ensemble, hợp nhất kiến thức từ nhiều view hoặc nhiều mô hình. (Tham khảo: Allen-Zhu et al. 2023). 
+
+Regularization & data efficiency: soft labels làm mượt gradients → hiệu ứng regularization; student có thể hội tụ nhanh hơn và cần ít dữ liệu hơn. 
+
+
+
+---
+
+6. Distillation in practice — hướng dẫn triển khai (step-by-step)
+
+Mục này trình bày checklist và ví dụ code pseudocode để bạn có thể thử.
+
+6.1 Chuẩn bị
+
+1. Chọn teacher: chất lượng cao, nhưng lưu ý capacity gap — teacher quá lớn có thể khó truyền đạt cho student quá yếu. Nghiên cứu khuyến cáo chọn teacher vừa phải; nếu gap lớn, dùng Teacher-Assistant (xem phần 8). 
+
+
+2. Chọn student: kiến trúc nhỏ hơn — giảm layers, hidden dims, heads… Có thể khác kiến trúc teacher (architecture-agnostic). 
+
+
+3. Chọn loại distillation: response, feature, relation hoặc kết hợp.
+
+
+4. Chuẩn bị dữ liệu: có thể dùng dữ liệu gốc hoặc unlabeled data — teacher có thể tạo soft labels cho unlabeled set (dễ mở rộng dữ liệu). 
+
+
+
+6.2 Hàm mất mát và siêu-tham số (hyperparams)
+
+Loss: .
+
+Temperature : thường chọn  từ 2 đến 10; giá trị phổ biến là 2~5 (thử nghiệm để chọn tốt nhất).
+
+Alpha: cân bằng giữa label cứng và soft targets; ví dụ  ban đầu.
+
+Feature losses: khi dùng feature-based, thêm term  (MSE) hoặc cosine loss; có hệ số cân riêng.
+
+Scheduler: có thể giảm dần trọng số distillation theo epochs hoặc ngược lại — thử nghiệm. 
+
+
+6.3 Pseudocode (response-based offline distillation)
+
+# Given: teacher (frozen), student (trainable), dataset D
+for epoch in 1..N:
+  for x, y in D:
+    z_T = teacher.logits(x)            # or precomputed
+    z_S = student.logits(x)
+
+    p_T = softmax(z_T / T)
+    p_S = softmax(z_S / T)
+
+    loss_hard = CE(softmax(z_S), y)
+    loss_soft = KL(p_T || p_S) * (T*T)  # often scaled by T^2
+
+    loss = alpha * loss_hard + (1-alpha) * loss_soft
+    backprop(loss); optimizer.step()
+
+Lưu ý: nhân KL với  nếu bạn muốn giữ scale gradient ổn định (theo một số ấn phẩm). 
+
+6.4 Kỹ thuật thực tế
+
+Precompute teacher logits: tiết kiệm thời gian khi teacher quá lớn; lưu logits/soft labels cho dataset và train student offline.
+
+Layer matching: khi làm feature-based, thêm projector layers để map kích thước giữa teacher và student.
+
+Data augmentation / unlabeled data: teacher có thể cấp soft labels cho large unlabeled corpus → tăng hiệu quả distillation (đặc biệt NLP).
+
+Early stopping teacher: đôi khi teacher quá overfit → soft labels quá ‘chắc’ → kém truyền đạt; dừng teacher sớm có lợi. 
+
+
+
+---
+
+7. Pitfalls & Limitations (và cách khắc phục)
+
+7.1 Capacity Gap
+
+Nếu student quá nhỏ so với teacher, distillation có thể hại hơn là lợi — student không đủ capacity để bắt chước. Khắc phục: chọn teacher vừa phải, hoặc dùng Teacher Assistant (một mô hình trung gian). 
+
+
+7.2 Teacher quá “overfitted”
+
+Teacher quá tối ưu trên train set có thể truyền “thói xấu”. Giải pháp: dùng teacher đã regularized hoặc dừng sớm.
+
+
+7.3 Kiến trúc không tương thích
+
+Feature-based đòi hỏi alignment giữa tầng; khi khác kiến trúc, cần projector/adapter.
+
+
+7.4 Chi phí huấn luyện
+
+Online distillation hoặc feature distillation tăng chi phí (phải chạy teacher trong training loop). Giải pháp: precompute, hoặc dùng offline distillation.
+
+
+
+---
+
+8. Kỹ thuật nâng cao & case studies ngắn
+
+8.1 DistilBERT & TinyBERT (NLP)
+
+DistilBERT: response-based distillation để giảm chiều sâu transformer (giữ ~97% F1 của BERT base với ~60% tham số). (Điển hình cho NLP). 
+
+
+8.2 FitNets (feature hints)
+
+FitNets dùng feed-forward hints từ tầng sâu teacher để hướng student học biểu diễn trung gian — tốt cho network mỏng hơn nhưng sâu hơn. 
+
+
+8.3 Relational KD
+
+Dành cho tasks đòi hỏi cấu trúc mối quan hệ mẫu (similarity, ranking). Student học hàm khoảng cách/quan hệ trong không gian embedding. 
+
+
+8.4 Teacher Assistant
+
+Khi gap teacher ↔ student quá lớn: tạo một “assistant” model trung gian (vừa phải) và distill theo chuỗi: Teacher → Assistant → Student. Nghiên cứu cho thấy cải thiện hiệu quả. 
+
+
+8.5 Pretraining + Distillation (Pretrained Distillation)
+
+Với NLP, tiền huấn luyện student trước khi distill (Pretrained Distillation) giúp student đạt hiệu quả cao hơn; có quy trình 3 bước: pretrain compact model → distill → finetune. 
+
+
+
+---
+
+9. Kết hợp Distillation với các phương pháp nén khác
+
+Distill → Quantize: thường làm distillation trước (để student có biểu diễn tốt) rồi quantize student; giúp giữ accuracy sau quantization. 
+
+PQK (Pruning, Quantization, KD): pipeline phối hợp prune → QAT → distill hoặc distill trong vòng lặp với pruning để đạt model rất nhẹ mà chính xác. (Ví dụ PQK paper). 
+
+Distill + Low-Rank / LoRA: distill vào kiến trúc nhỏ kèm low-rank adaptation cho fine-tuning nâng cao.
+
+
+
+---
+
+10. Checklist triển khai (quick-start)
+
+1. Chọn teacher (đảm bảo không quá overfit).
+
+
+2. Thiết kế student (cân bằng giữa latency và capacity).
+
+
+3. Chọn kiểu distillation (response nếu muốn nhanh; feature nếu cần biểu diễn nội bộ).
+
+
+4. Chuẩn bị dữ liệu; nếu có unlabeled data — tận dụng teacher tạo soft labels.
+
+
+5. Chọn  ban đầu (ví dụ , ).
+
+
+6. Thử offline precompute teacher logits để tiết kiệm thời gian.
+
+
+7. Nếu dùng feature-based: thêm projector layers; cân chỉnh weight loss.
+
+
+8. Kiểm tra capacity gap — nếu cần, thêm Teacher Assistant.
+
+
+9. Sau khi có student tốt: thử quantize / prune / low-rank để thêm nén. 
+
+
+
+
+---
+
+11. Tài liệu tham khảo & nguồn chính (từ Aman.ai)
+
+Các điểm chính trong tài liệu này dựa trực tiếp trên phần Knowledge Distillation của Aman.ai (Primers • Model Compression for On-Device AI). Bạn có thể xem chi tiết gốc để tham khảo thêm các bài báo, ví dụ và liên kết: 
+
+
+---
+
+Nếu bạn muốn mình mở rộng thêm phần nào (chọn 1 trong 3):
+A) Ví dụ code PyTorch/Transformers cho DistilBERT (full notebook: precompute logits → train student).
+B) Ví dụ cấu hình feature-based (FitNets) với projector & loss balancing + code.
+C) Một case-study: end-to-end pipeline Teacher → Student → Quantize + so sánh hiệu năng/accuracy.
+
+Bạn chọn A/B/C hoặc nói “tất cả”, mình sẽ tiếp tục ngay.
+
