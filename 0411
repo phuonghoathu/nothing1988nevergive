@@ -1,0 +1,167 @@
+Kỹ thuật Prompt Engineering (từ cơ bản đến nâng cao)
+
+Prompt Engineering nghĩa là thiết kế câu lệnh (prompts) cho AI để hướng dẫn mô hình tạo ra câu trả lời đúng, hữu ích. Hiện có nhiều kỹ thuật hữu ích từ đơn giản đến phức tạp. Dưới đây lần lượt trình bày các kỹ thuật chính, kèm ví dụ minh họa và mẹo tối ưu câu lệnh.
+
+1. Các kỹ thuật dựa trên ví dụ (Example-Based Prompting)
+
+Zero-shot prompting (không ví dụ): Mô hình chỉ nhận yêu cầu và trả lời ngay mà không có ví dụ minh hoạ nào. Ví dụ: "Viết một đoạn văn ngắn giải thích tại sao bầu trời có màu xanh" (mô hình tự dùng kiến thức huấn luyện để trả lời). Kỹ thuật này đơn giản nhưng thường chỉ hiệu quả với yêu cầu cơ bản hoặc đã quen thuộc với mô hình. Nếu nhiệm vụ phức tạp, mô hình dễ trả lời nhầm hoặc chung chung.
+
+One-shot prompting (1 ví dụ): Cung cấp một ví dụ mẫu trước khi yêu cầu chính để định hướng. Ví dụ: "Ví dụ: X = ... thì Y = ... . Bây giờ, cho X’ = ... , Hãy tìm Y’." Sự có mặt của một ví dụ giúp mô hình hiểu rõ hơn định dạng và mục tiêu.
+
+Few-shot prompting (ít ví dụ): Cung cấp vài ví dụ mẫu (thường 3–10) trước yêu cầu. Ví dụ, để phân loại cảm xúc:
+
+“This movie was fantastic! // Positive
+
+“This was the worst experience” // Negative
+
+Prompt mới: “I loved the storyline and characters. // ?”
+Mô hình sẽ trả lời Positive dựa trên các ví dụ. Few-shot thường cải thiện độ chính xác khi nhiệm vụ khó hơn, vì mô hình học cách làm từ các ví dụ thực tế.
+
+
+
+2. Các kỹ thuật hướng dẫn suy nghĩ (Reasoning Enhancement)
+
+Chain-of-Thought (CoT) / Step-by-step prompting: Yêu cầu mô hình nêu chi tiết các bước suy luận trước khi đưa ra kết quả cuối cùng. Ví dụ, với bài toán: “John có 10 quả táo, cho đi 4 quả rồi nhận thêm 5 quả nữa. Hỏi còn bao nhiêu quả?”, prompt CoT có thể là:
+
+> “Q: John có 10 quả táo. Anh ta cho đi 4 quả và nhận thêm 5 quả. Hỏi John còn bao nhiêu quả? Hãy giải thích từng bước.”
+Mô hình sẽ trả lời:
+
+
+
+1. Ban đầu John có 10 quả.
+2. Sau khi cho đi 4 quả, còn 10 - 4 = 6 quả.
+3. Nhận thêm 5 quả, thành 6 + 5 = 11 quả. => Kết quả: 11.
+
+Phương pháp này yêu cầu AI “suy nghĩ từng bước” nên thường chính xác hơn các câu trả lời gãy gọn cho các bài toán phức tạp. Một biến thể hay dùng là thêm cụm từ “Hãy suy nghĩ từng bước” (hoặc tiếng Anh “Let’s think step by step”) vào prompt. Cụm từ này kích hoạt khả năng CoT ngay cả khi không có ví dụ kèm theo.
+
+Prompt Chaining (nối chuỗi prompt): Chia một nhiệm vụ lớn thành nhiều sub-task nhỏ, dùng đầu ra của prompt trước làm đầu vào cho prompt sau. Ví dụ: muốn phân tích văn bản dài, prompt đầu tiên có thể trích xuất các câu quan trọng, prompt thứ hai dùng kết quả đó để trả lời câu hỏi. Prompt chaining giúp tăng tính minh bạch và kiểm soát, dễ debug hơn vì có thể theo dõi kết quả từng giai đoạn.
+
+
+3. Prompt theo vai trò (Role Prompting)
+
+Gán cho AI một vai trò (persona) cụ thể để định hướng phong cách và nội dung trả lời. Ví dụ:
+
+Prompt: “Bạn là một bác sĩ chuyên khoa, hãy giải thích cho bệnh nhân về tác dụng của vitamin D.”
+Ở đây vai trò “bác sĩ” sẽ khiến mô hình dùng giọng điệu chuyên môn, dễ hiểu cho bệnh nhân. Kỹ thuật này phổ biến dưới dạng các câu “I want you to act as a ...” hoặc “You’re a ...”. Việc gắn vai trò rõ ràng giúp đầu ra nhất quán với ngữ cảnh (ví dụ “bác sĩ nói về y học”, “giáo viên giảng bài”, v.v.) và thường làm câu trả lời sáng rõ, chính xác hơn. Lưu ý nên chọn vai trò phù hợp (tránh vai trò nhạy cảm) và có thể kèm yêu cầu về phong cách (thân mật, chuyên nghiệp…) để tối ưu hóa kết quả.
+
+
+4. Các kỹ thuật nâng cao khác
+
+Mẫu prompt (Prompt Templates): Xây dựng các mẫu có thể tái sử dụng với các vị trí chờ (placeholders) cho giá trị cụ thể. Ví dụ template: “Viết một bản tóm tắt {tone} của bài báo ‘{title}’ dài {word_count} từ.” Khi sử dụng, bạn chỉ cần thay {tone} hay {title} bằng giá trị thực. Prompt template giúp đảm bảo tính nhất quán giữa các lần gọi mô hình, tiết kiệm thời gian soạn prompt mới và dễ điều chỉnh khi cần. Nhiều thư viện như LangChain hay LlamaIndex hỗ trợ tạo và quản lý prompt template, tiện cho ứng dụng quy mô lớn.
+
+Tinh chỉnh prompt (Prompt Tuning): Kỹ thuật nâng cao trong đó ta “huấn luyện” một phần nhỏ của mô hình (thường là các token ẩn gọi là soft prompts) để tối ưu hóa kết quả mà không cần thay đổi toàn bộ mô hình. Prompt tuning vẫn dựa trên mô hình tiền huấn luyện, nhưng thêm những vector đặc biệt trước câu lệnh đầu vào để định hướng mô hình. Ưu điểm là chỉ cần ít tài nguyên so với fine-tuning toàn mô hình (duy trì tham số gốc, nhanh chuyển đổi giữa các nhiệm vụ). Đây là kỹ thuật cho người có khả năng huấn luyện thêm, không phải hướng dẫn đặt câu lệnh đơn thuần.
+
+Meta-Prompting: Đây là khái niệm soát xét và tái sử dụng prompt ở mức cao hơn. Theo IBM, meta-prompting nghĩa là cung cấp cho LLM một “khung” xử lý vấn đề theo từng bước để giải quyết cả một loại bài toán (một thư mục nhiệm vụ), thay vì chỉ một bài toán đơn lẻ. Ví dụ, với nhóm bài toán phương trình: meta-prompt có thể hướng dẫn mô hình “xác định hệ số, chọn phương pháp giải, giải bước một, kiểm tra kết quả” rồi áp dụng cho bất cứ hệ số nào. Như vậy, meta-prompt tạo ra một mẫu suy luận chung cho nhiều trường hợp tương tự. Ngoài ra, một cách tiếp cận khác gọi cũng là “meta-prompt” là quy trình cải thiện prompt lặp lại: sau khi có câu trả lời ban đầu, người dùng đưa phản hồi cụ thể (đầu ra thiếu điểm gì) rồi yêu cầu AI tự tối ưu lại prompt gốc. Kỹ thuật này tận dụng AI để cải thiện prompt thông qua phản hồi và yêu cầu sửa đổi (gọi là meta-prompt trong lập trình).
+
+
+5. Mẹo và chiến lược tối ưu hóa
+
+Kinh nghiệm sử dụng mô hình cho thấy một số quy tắc chung giúp prompt hiệu quả hơn:
+
+Rõ ràng, cụ thể: Đặt hướng dẫn (instruction) ngay đầu prompt và chi tiết về bối cảnh, kết quả mong muốn, định dạng đầu ra, phong cách văn bản. Ví dụ, thay vì “Viết một bài thơ về tinh vân” (mơ hồ), ta có thể yêu cầu “Viết một bài thơ ngắn, cảm hứng về tinh vân với phong cách của nhà thơ X, dài khoảng 4 câu.” Sự cụ thể giúp AI hiểu đúng mục tiêu hơn.
+
+Cho ví dụ về định dạng: Nếu cần kết quả theo cấu trúc hoặc định dạng nhất định (ví dụ liệt kê, bảng, JSON…), hãy chỉ rõ hoặc minh hoạ bằng ví dụ. Ví dụ: “Trích xuất các thực thể trong văn bản và xuất theo định dạng: ‘Công ty: … ; Người: … ; Chủ đề: …’.” Cách làm này giúp mô hình dễ sản sinh đầu ra chuẩn hơn.
+
+Bắt đầu từ zero-shot rồi lên few-shot: Thử nghiệm bắt đầu với prompt không ví dụ, nếu chưa đạt thì thêm 1–2 ví dụ (few-shot). Ví dụ minh hoạ ban đầu có thể từ dữ liệu gần nhất, sau đó tinh chỉnh số lượng hoặc nội dung ví dụ. Nếu prompt vẫn chưa đúng ý, cân nhắc fine-tune hoặc RAG (lấy dữ liệu tham khảo).
+
+Tránh ngôn ngữ mập mờ, lằng nhằng: Câu lệnh dài dòng, thiếu cấu trúc thường bị hiểu sai. Nên rút gọn yêu cầu vào 3-5 câu, dùng gạch đầu dòng nếu cần liệt kê ý chính. Thay vì nói “không hỏi…” (dẫn đến mô hình chỉ chú tâm phần “không”), hãy dùng ví dụ tích cực: “hãy làm X mà không hỏi thông tin nhạy cảm”.
+
+Tinh chỉnh tham số (nếu có thể): Với các API mở (GPT, Claude…), thiết lập hệ số temperature, top_p, v.v. cũng quan trọng. Ví dụ, chọn nhiệt độ thấp (gần 0) để tạo ra câu trả lời chính xác, ổn định; nhiệt độ cao (cỡ 0.8–1.0) để sáng tạo hơn. Các cài đặt này nên thử nghiệm cho phù hợp tác vụ.
+
+
+6. Ứng dụng đa nền tảng
+
+Những kỹ thuật trên có thể áp dụng cho cả mô hình ngôn ngữ (ChatGPT, Claude…) lẫn mô hình tạo ảnh (Midjourney, DALL·E, …), dù cần chú trọng khác nhau:
+
+ChatGPT / Claude (LLM text): Các nguyên tắc vẫn giống nhau. Ví dụ, ChatGPT hỗ trợ vai trò “system” để định nghĩa nhân vật, còn Claude có thể dùng thẻ định dạng (<system>, <user>, v.v.) và có khả năng suy luận CoT mạnh. Cả hai đều hưởng lợi từ việc rõ vai trò, ví dụ mẫu, yêu cầu diễn giải từng bước đã nêu. Tóm lại, khi soạn prompt cho ChatGPT/Claude, hãy đặt hướng dẫn ngắn gọn, rõ ràng ở đầu, dùng lệnh “Hãy đóng vai …” nếu cần, và thêm “hãy giải thích từng bước” để nâng cao chất lượng.
+
+Midjourney / DALL·E (tạo ảnh): Các mô hình đồ họa phản hồi qua mô tả ngôn ngữ. Midjourney khuyến nghị dùng prompt ngắn gọn nhưng rõ nghĩa: chỉ rõ đối tượng, phong cách, chất liệu, màu sắc, ánh sáng… Ví dụ, thay vì “hoa”, hãy “bức tranh minh hoạ hoa đua nở rực rỡ dưới ánh nắng ban mai, phong cách tranh chì màu”. Midjourney ưu tiên từ vựng chính xác (ví dụ “gigantic” thay “big”), số lượng cụ thể (“three cats” thay “cats”) và tập trung miêu tả mong muốn (không nêu điều không muốn xuất hiện). Ngoài ra, có thể sử dụng thông số mở rộng (ví dụ --style, --v ở Midjourney) để kiểm soát phong cách hoặc độ sáng tạo. Với DALL·E 3, OpenAI cho biết mô hình rất nhạy với prompt chi tiết và sẽ tự động bổ sung chi tiết nếu input quá ngắn. Vì vậy, hãy miêu tả đầy đủ: cảnh, chủ thể, phong cách nghệ thuật, bối cảnh… giống như ta kêu gọi một họa sĩ vẽ dùm.
+
+Lưu ý chung: Mỗi nền tảng có thể ưu tiên khác nhau (ví dụ ChatGPT thường ổn với prompt hội thoại dài, còn các API ảnh đòi hỏi prompt súc tích hơn). Tuy vậy, nguyên tắc cơ bản là giống nhau: chỉ dẫn rõ ràng, mẫu ví dụ (đối với text), ngôn từ miêu tả chi tiết (đối với ảnh) sẽ giúp mô hình hiểu và thực thi đúng ý hơn.
+
+
+Kết luận
+
+Tóm lại, prompt engineering bao gồm rất nhiều kỹ thuật đa dạng. Từ cơ bản là zero-shot/few-shot (dùng ví dụ mẫu) đến những kỹ thuật nâng cao như chain-of-thought, role-prompting, prompt templates hay tuning. Mỗi kỹ thuật đều có ví dụ và mẹo áp dụng riêng, nhưng tựu chung là hướng dẫn càng rõ ràng – có ví dụ mẫu hoặc khung mẫu – thì kết quả AI trả về càng đáng tin cậy. Kết hợp các kỹ thuật và liên tục thử nghiệm chỉnh sửa prompt (có thể sử dụng phản hồi của AI để tối ưu lại prompt) sẽ giúp đạt kết quả tốt nhất. Đặc biệt, khi áp dụng trên các nền tảng khác nhau như ChatGPT, Claude hay Midjourney, DALL·E, cần lưu ý đặc thù của mỗi mô hình (như định dạng chat vs mô tả ảnh) nhưng vẫn vận dụng các nguyên lý trên.
+
+Nguồn tham khảo: Các định nghĩa và ví dụ trên dựa trên hướng dẫn kỹ thuật của IBM, LearnPrompting, các bài viết chuyên sâu như PromptingGuide, DataCamp, và tài liệu chính thức của Midjourney, OpenAI.
+
+
+
+Hướng dẫn Prompt Engineering cho Người Mới Bắt Đầu
+
+Prompt Engineering là gì?
+
+Prompt Engineering hay kỹ thuật tạo lệnh là quá trình thiết kế và tối ưu lệnh đầu vào (prompt) để hệ thống AI tạo sinh (như ChatGPT, DALL·E, Midjourney, Claude…) hiểu và trả lời đúng yêu cầu. Một prompt có thể là một câu hỏi, yêu cầu hoặc đoạn văn bản bằng ngôn ngữ tự nhiên (có thể kèm mã) diễn đạt nhiệm vụ mà ta muốn AI thực hiện. Bằng cách lựa chọn từ ngữ, ngữ cảnh và định dạng phù hợp, người dùng có thể “hướng dẫn” mô hình AI tạo ra kết quả mong muốn. Nói cách khác, Prompt Engineering giúp kiểm soát và nâng cao chất lượng đầu ra của AI bằng cách xây dựng lệnh một cách tỉ mỉ và rõ ràng.
+
+Tại sao Prompt Engineering quan trọng?
+
+Prompt Engineering đóng vai trò then chốt trong việc tương tác với các mô hình AI. Khi prompt được thiết kế đúng cách, chất lượng phản hồi của AI sẽ tăng đáng kể; ngược lại, prompt mơ hồ hay quá ngắn có thể dẫn đến kết quả không chính xác hoặc không liên quan. Một prompt hiệu quả giúp AI hiểu rõ ý định của người dùng, từ đó tiết kiệm thời gian và nâng cao trải nghiệm. Chẳng hạn, một câu lệnh chi tiết và rõ ràng sẽ giúp AI tạo ra câu trả lời chính xác hơn, tránh trường hợp AI “lạc đề” hoặc tạo thông tin sai lệch. Do đó, đầu tư vào việc học cách viết prompt tốt là rất cần thiết để khai thác tối đa sức mạnh của các công cụ trí tuệ nhân tạo hiện nay.
+
+Một số công cụ AI phổ biến
+
+Trong thực tế, Prompt Engineering được áp dụng với nhiều công cụ AI khác nhau. Với các mô hình ngôn ngữ lớn như ChatGPT (của OpenAI) hay Claude (của Anthropic), prompt thường là một câu hỏi hoặc yêu cầu bằng văn bản, yêu cầu AI trả lời hoặc giải thích. Ngược lại, với các công cụ tạo ảnh từ văn bản như DALL·E hay Midjourney, prompt là mô tả hình ảnh đầu ra mong muốn. Ví dụ, một prompt cho Midjourney có thể là “một bức ảnh chất lượng cao của một phi hành gia cưỡi ngựa”, trong đó người dùng có thể thêm mô tả về phong cách, ánh sáng, màu sắc, bố cục để ảnh tạo ra càng sát mong muốn. Do đó, tùy từng công cụ (text-to-text hay text-to-image), prompt sẽ có cấu trúc khác nhau nhưng đều hướng đến việc diễn đạt yêu cầu một cách rõ ràng.
+
+Bất kể công cụ nào, nguyên tắc chung là càng cung cấp thông tin chi tiết và cụ thể trong prompt thì AI càng tạo ra kết quả chất lượng và đúng ý bạn. Ví dụ, khi dùng ChatGPT bạn có thể yêu cầu “tóm tắt bài báo dưới 100 chữ theo phong cách trang nghiêm”, còn với DALL·E bạn sẽ mô tả rõ hình ảnh muốn vẽ (chủ đề, phong cách hội họa, điều kiện ánh sáng, …) để nhận được bức ảnh như ý. Việc hiểu cách thức hoạt động của từng công cụ giúp bạn tận dụng tốt Prompt Engineering hơn.
+
+Mẹo viết Prompt hiệu quả
+
+Để viết prompt hiệu quả và nhận được kết quả chính xác, bạn nên tuân theo một số nguyên tắc sau:
+
+Xác định mục tiêu rõ ràng: Trước khi nhập prompt, hãy xác định bạn cần gì – câu trả lời dài hay ngắn, loại thông tin gì, mục đích sử dụng (ví dụ: mã hóa, viết nội dung, phân tích,…). Khi biết chính xác mục đích, bạn sẽ dễ đưa ra câu lệnh chính xác hơn.
+
+Cung cấp chi tiết và bối cảnh: Một prompt chi tiết sẽ giúp AI hiểu yêu cầu tốt hơn. Bạn nên bổ sung thông tin cụ thể như bối cảnh, đối tượng, định dạng đầu ra mong muốn. Ví dụ, nếu muốn AI viết hướng dẫn nấu ăn, prompt nên bao gồm tên món, độ dài bài viết, phong cách diễn đạt… để đáp án sát với yêu cầu. Thêm vào đó, việc thiết lập bối cảnh rõ ràng cũng giúp kết quả liên quan và chính xác hơn.
+
+Diễn đạt rõ ràng, súc tích: Mặc dù cần chi tiết, nhưng đừng viết prompt quá dài dòng hay phức tạp. Tập trung vào từ khóa chính và diễn đạt đơn giản nhất. Một câu lệnh súc tích sẽ giúp AI “nắm bắt” ý bạn nhanh chóng. Tránh dùng các từ quá mơ hồ hoặc câu hỏi dài lê thê, vì có thể khiến AI hiểu nhầm.
+
+Sử dụng vai trò và hệ thống (system): Trong ChatGPT và Claude, bạn có thể thêm câu lệnh hệ thống (system message) để định hướng AI ở vai trò cụ thể. Ví dụ: “Bạn là chuyên gia marketing, hãy viết...” hoặc “Giả sử bạn là một giáo viên toán, ...”. Kỹ thuật này giúp AI hiểu phong cách và kiến thức chuyên môn cần áp dụng khi trả lời.
+
+Kiểm tra và tinh chỉnh: Sau khi có kết quả, hãy xem lại và điều chỉnh prompt nếu cần. Nếu kết quả không như ý, bạn có thể thêm yêu cầu hoặc sửa lại cách diễn đạt, sau đó thử lại. Prompt Engineering thường yêu cầu lặp lại nhiều lần để tối ưu hóa, nên đừng ngại sửa đổi để đạt được câu trả lời tốt hơn.
+
+
+Ví dụ minh họa
+
+Dưới đây là một số ví dụ về cách phát triển prompt từ đơn giản đến nâng cao:
+
+Ví dụ ChatGPT (nội dung văn bản):
+
+Prompt đơn giản: “Viết về trí tuệ nhân tạo.” (câu lệnh chung chung, dễ nhận được phản hồi lan man).
+
+Prompt cải tiến: “Viết một bài blog về các ứng dụng của trí tuệ nhân tạo trong giáo dục với các ví dụ cụ thể.”. (Bổ sung thông tin chủ đề và đối tượng, AI sẽ trả lời tập trung hơn.)
+
+Prompt nâng cao: “Bạn là một chuyên gia công nghệ giáo dục. Viết một bài blog ~400 chữ về các ứng dụng của trí tuệ nhân tạo trong giáo dục, nêu rõ ví dụ cụ thể và lợi ích cho học sinh.” (Đặt vai trò cho AI và thêm yêu cầu về độ dài, phong cách giúp kết quả chi tiết và đúng mục đích.)
+
+
+Ví dụ ChatGPT (liệt kê công cụ):
+
+Prompt chưa hiệu quả: “Tôi muốn tìm một số công cụ thiết kế đồ họa miễn phí cho người mới bắt đầu.” (dễ nhận câu trả lời chung chung).
+
+Prompt hiệu quả: “Liệt kê 5 công cụ thiết kế đồ họa miễn phí dành cho người mới bắt đầu, kèm theo ưu và nhược điểm cụ thể của từng công cụ.”. (Yêu cầu chi tiết giúp AI trả lời đúng trọng tâm hơn.)
+
+Prompt nâng cao: “Giả sử bạn là nhà thiết kế đồ họa chuyên nghiệp, hãy liệt kê 5 công cụ thiết kế đồ họa miễn phí dành cho người mới bắt đầu. Mô tả rõ ưu, nhược điểm và ví dụ về dự án phù hợp với từng công cụ.” (Thêm vai trò và ví dụ thực tế giúp nội dung sâu hơn.)
+
+
+Ví dụ tạo ảnh với AI (Midjourney/DALL·E):
+
+Prompt đơn giản: “Một con mèo đang lái xe đạp.” (dễ có hình ảnh cơ bản).
+
+Prompt cải tiến: “Một bức tranh phong cách hoạt hình vẽ một con mèo dễ thương đang lái chiếc xe đạp cũ trên con đường nắng đẹp trong công viên.” (Thêm phong cách, chi tiết về màu sắc và khung cảnh để ảnh sinh động hơn.)
+
+Prompt nâng cao: “Ảnh minh họa siêu chi tiết, phong cách vẽ hoạt hình châu Âu: con mèo đen trắng đeo nơ đỏ đang đi xe đạp cổ điển trên đường lát gạch, xung quanh là công viên mùa xuân hoa nở, ánh sáng ban mai chiếu qua tán lá. Chất lượng 4K.” (Thêm hướng dẫn cụ thể về ánh sáng, độ phân giải, phong cách để có hình ảnh đạt chuẩn chuyên nghiệp.)
+
+
+Ví dụ viết email chuyên nghiệp:
+
+Prompt đơn giản: “Viết email xin việc.”
+
+Prompt hiệu quả: “Viết một email xin việc chuyên nghiệp cho vị trí lập trình viên, giới thiệu bản thân và kinh nghiệm liên quan.”
+
+Prompt nâng cao: “Bạn là chuyên gia nhân sự. Hãy viết một email xin việc dài khoảng 250 từ, nêu rõ kỹ năng lập trình và thành tựu, đề xuất thời gian phỏng vấn, sử dụng giọng lịch sự và gắn logo công ty công nghệ XYZ ở cuối.” (Thêm vai trò, định dạng và chi tiết cụ thể để email hoàn chỉnh và ấn tượng.)
+
+
+
+Những ví dụ trên cho thấy cách bổ sung thông tin và cấu trúc prompt có thể thay đổi đáng kể kết quả đầu ra.
+
+Kết luận
+
+Prompt Engineering là kỹ năng thiết yếu khi làm việc với AI. Bằng việc xác định mục tiêu rõ ràng, cung cấp bối cảnh chi tiết và cấu trúc prompt hợp lý, bạn sẽ giúp AI hiểu đúng ý và tạo ra kết quả chính xác hơn. Các công cụ AI như ChatGPT, Claude, DALL·E hay Midjourney đều có thể được “khai phá” tốt hơn nhờ prompt hiệu quả. Hãy luyện tập viết prompt, kiểm tra kết quả và điều chỉnh nhiều lần – đây là cách nhanh nhất để thuần thục nghệ thuật tương tác với AI.
