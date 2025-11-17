@@ -1,0 +1,92 @@
+Report: Đánh giá và Khuyến nghị về LLaDA trong Hỗ trợ Long Context (45k Tokens), SFT, và Performance Chung
+1. Giới thiệu
+Báo cáo này dựa trên các điểm được nêu trong tài liệu cung cấp (hình ảnh slide), tập trung vào việc "đẩy mạnh" (推進) mô hình LLaDA (Large Language Diffusion Models), xác lập phương pháp triển khai, khảo sát performance chung, khả năng hỗ trợ long context lên đến 45k tokens, xác nhận tính khả thi của Supervised Fine-Tuning (SFT), và khảo sát các mô hình diffusion language models (DLLM) khác nếu cần. Tài liệu tham chiếu chính bao gồm paper gốc trên arXiv (https://arxiv.org/pdf/2502.09992) và repository GitHub (https://github.com/ML-GSAI/LLaDA).
+LLaDA là một mô hình ngôn ngữ lớn dựa trên diffusion (masked diffusion model - MDM), sử dụng Transformer làm backbone với attention bidirectional để dự đoán token bị mask. Nó được pre-train từ đầu trên 2.3T tokens với sequence length 4096, và chứng minh khả năng cạnh tranh với các autoregressive models (ARMs) như LLaMA3 8B ở các nhiệm vụ như in-context learning, instruction-following, và reversal reasoning.5022aa Báo cáo sẽ xem xét tính khả thi của các điểm trên, dựa trên dữ liệu từ paper gốc, repo, và các nghiên cứu cập nhật đến tháng 11/2025.
+2. Performance Chung của LLaDA
+Dựa trên khảo sát từ paper gốc và các benchmark được report:
+Scalability và Benchmarks: LLaDA 8B đạt hiệu suất cao trên các nhiệm vụ chung: MMLU (65.9%), GSM8K (70.3%), HumanEval (35.4%), CMMLU (69.9%). Nó vượt LLaMA2 7B và gần bằng LLaMA3 8B Base. Sau SFT, LLaDA 8B Instruct cải thiện ở code (HumanEval 49.4%) và math, nhưng kém hơn một chút ở MMLU do dữ liệu huấn luyện nhỏ hơn (2.3T tokens so với 15T của LLaMA3).2aa163
+Ưu điểm so với ARMs: LLaDA khắc phục "reversal curse" (hiệu suất reversal poem completion 45.6%, vượt GPT-4o 34.3%) nhờ bidirectional dependencies. Nó cũng mạnh ở multi-turn dialogue, translation, và code generation.c03028
+Hạn chế: Không hỗ trợ KV caching, memory cao hơn ARMs ở inference. Generation length là hyperparameter cố định, không adaptive. Không có RL alignment hoặc multimodal.9af6bd
+Cập nhật 2025: Repo GitHub có variants mới như LLaDA-MoE-7B (Mixture-of-Experts) từ tháng 9/2025, cải thiện efficiency, nhưng không thay đổi performance cốt lõi.34f6bc
+Tổng thể, performance chung được report tích cực, phù hợp để đẩy mạnh triển khai ở các task ngôn ngữ.
+3. Khả năng Hỗ trợ Long Context (45k Tokens)
+Gốc từ Paper và Repo: LLaDA pre-train với fixed sequence length 4096 tokens (1% dữ liệu variable [1-4096]). Không có mention trực tiếp về extension lên 45k tokens. Inference hỗ trợ generation length linh hoạt (256-1024 tokens trong ablation), nhưng giới hạn bởi position embeddings và không có optimizations như KV cache.2cbf8a21ec0e
+Khảo sát External (Cập nhật 2025): Các nghiên cứu mới chứng minh tính khả thi extension mà không cần retrain đầy đủ:
+LongLLaDA (arXiv 2506.14429, update Nov 2025): Phương pháp training-free sử dụng NTK-based RoPE extrapolation để extend context cho diffusion LLMs như LLaDA. Test lên 24k-32k tokens với độ chính xác cao (gần 100% ở Needle-In-A-Haystack), nhưng tại 32k xuất hiện "lost-in-the-middle". Không test cụ thể 45k, nhưng method này ổn định đến 24k và có thể scale thêm với điều chỉnh λ factor. Diffusion LLMs như LLaDA vượt ARMs ở extrapolation nhờ bidirectional attention.874776fca57e1b18b29137b19a28fb143120
+UltraLLaDA (arXiv 2510.10481, Oct 2025): Post-training techniques để scale context lên 128k tokens cho LLaDA. Bao gồm continual training trên long sequences và optimizations. 45k tokens nằm trong range này, nên khả thi với method tương tự (không cần pre-train lại, chỉ post-train).a30a711128da
+Khảo sát DLLM Khác: Các mô hình diffusion LLMs khác như LLaDA-1.5 (zhu2025llada) và Dream cũng được test trong LongLLaDA, cho thấy pattern tương tự: Ổn định extrapolation nhưng yếu ở aggregation tasks. Trong LLMs nói chung, models như Llama hỗ trợ 128k-10M tokens, chứng minh xu hướng long context khả thi.e2b21f4d78a8a5b240
+Kết luận về 45k: Khả thi với extensions như NTK RoPE hoặc post-training (từ LongLLaDA/UltraLLaDA), nhưng cần verify trên real data để tránh issues như lost-in-the-middle. Không có report cụ thể về "door push low" (có thể ám chỉ low performance ở edge cases), nhưng paper cảnh báo về degradation ở context xa.
+4. Xác nhận Tính Khả thi của SFT cho LLaDA
+Từ Paper Gốc: SFT được hỗ trợ và thực hiện trên 4.5M pairs (code, math, instructions). Mask chỉ response tokens để tương thích pre-training. Cải thiện instruction-following, nhưng không dùng RL nên kém hơn LLaMA3 Instruct ở một số task.44a10a
+Từ Repo: Guidelines chi tiết trong GUIDELINES.md, dễ adapt từ ARMs codebase. Sử dụng scripts như train.py từ project liên quan (SMDM). Models Instruct sẵn trên HF cho usage trực tiếp.acf043
+Method Tồn tại: Có, và đơn giản (3 epochs, LR 2.5e-5). Nếu không thể implement đầy đủ, report về limitations ok, nhưng dựa trên tài liệu, hoàn toàn khả thi.
+5. Khảo sát Internal/External và Khuyến nghị Verify Real Data
+Internal: Dựa trên repo, có thể tải models từ HF và test với scripts (e.g., chat.py cho multi-turn). Không có issues open về long context.
+External: Không tìm thấy discussions trên X (no results), nhưng papers như LongLLaDA/UltraLLaDA cung cấp benchmark empirical. Các xu hướng LLMs 2025 (e.g., Infinite Retrieval, Cascading KV Cache) có thể apply để cải thiện.1210c84ec2e4
+Khuyến nghị:
+Xác lập phương pháp: Sử dụng NTK RoPE cho extrapolation ban đầu (training-free), sau đó post-train như UltraLLaDA cho 45k+.
+Verify: Archive data từ repo/paper, rồi test trên real data (e.g., long documents) để đo perplexity và accuracy. Nếu performance low ở context xa, adjust sampling steps (16+ tốt hơn).
+Next Steps: Thử DLLM khác như LLaDA-1.5 nếu LLaDA gốc không đủ, và integrate MoE variants cho efficiency.
+Báo cáo này xác nhận LLaDA có tiềm năng đẩy mạnh, với long context 45k khả thi qua extensions cập nhật 2025. Nếu cần verify thêm hoặc code demo, vui lòng cung cấp data cụ thể.
+
+
+
+Source Code của LLaDA: Tổng quan và Mẫu Code
+Dựa trên yêu cầu của bạn (tôi giả định "source cide" là "source code" – mã nguồn của LLaDA), tôi đã tổng hợp thông tin từ repository GitHub chính thức (https://github.com/ML-GSAI/LLaDA) và các nguồn liên quan. LLaDA là triển khai PyTorch chính thức cho paper "Large Language Diffusion Models". Tuy nhiên, lưu ý rằng repo không open-source đầy đủ mã huấn luyện (training framework và data), như hầu hết các LLMs open-source khác (ví dụ: họ tham chiếu đến SMDM cho quá trình training tương tự).190a0b Repo chủ yếu cung cấp mã cho inference, generation, chat, và evaluation, cùng với model checkpoints trên Hugging Face.
+Cấu trúc Repository (Dựa trên mô tả và files được đề cập)
+Từ README và các file chính:
+Thư mục chính: Bao gồm scripts cho generation và demo.
+Key Files:
+README.md: Giới thiệu project, cách cài đặt, usage, và Q&A.
+GUIDELINES.md: Hướng dẫn chi tiết về training process (tham chiếu paper), nhưng không có code full.
+EVAL.md: Hướng dẫn evaluation trên benchmarks như MMLU, GSM8K.
+generate.py: Script để generate text từ prompt, sử dụng block diffusion và remasking.
+chat.py: Script cho multi-round conversation với LLaDA-8B-Instruct.
+app.py: Gradio demo cho chat interface (cần install Gradio: pip install gradio).
+get_log_likelihood.py: Tính log-likelihood cho evaluation.
+modeling.py hoặc tương tự (đề cập trong discussions): Định nghĩa model, nhưng có thể là phần của checkpoint trên HF.
+Các file khác: Config files, utils cho masking và sampling.407aa76855d5849602
+Installation:
+Clone repo: git clone https://github.com/ML-GSAI/LLaDA.git
+Install dependencies: pip install -r requirements.txt (giả sử có file requirements, thường bao gồm torch, transformers).
+Model checkpoints: Tải từ Hugging Face (e.g., GSAI-ML/LLaDA-8B-Instruct).a153f4
+Usage Examples (Từ README):
+Chạy chat: python chat.py (multi-round với LLaDA-8B-Instruct).
+Chạy Gradio demo: python app.py.
+Không có train.py public, nhưng guidelines gợi ý adapt từ SMDM repo.a35c7b
+Mẫu Code Samples
+Dưới đây là các trích đoạn code từ các file chính (extract từ snippets public trên GitHub và variants tương tự, vì repo không cung cấp raw code đầy đủ qua browse). Chúng minh họa cách LLaDA sử dụng masked diffusion cho generation.
+Từ generate.py (Script chính cho text generation, sử dụng block diffusion để generate song song):
+'''
+x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(model.device)
+x[:, :prompt.shape[1]] = prompt.clone()
+
+prompt_index = (x != mask_id)
+
+assert gen_length % block_length == 0
+num_blocks = gen_length // block_length
+
+assert steps % num_blocks == 0
+steps = steps // num_blocks
+
+for num_block in range(num_blocks):
+    block_mask_index = (x[:, prompt.shape[1] + num_block * block_length: prompt.shape[1] + (num_block + 1) * block_length:] == mask_id)
+    num_transfer_tokens = get_num_transfer_tokens(block_mask_index, steps)
+    # ... (tiếp tục với denoising steps, dự đoán token dựa trên confidence, remask low-confidence tokens)
+'''
+Mô tả: Script khởi tạo sequence với prompt và masks, sau đó generate theo blocks (e.g., block_length=128). Sử dụng remasking cho token low-confidence để cải thiện chất lượng. Điều này thể hiện bidirectional diffusion, khác ARMs.6f8c52eaa171
+Từ chat.py (Script cho conversation, dựa trên generate.py):
+Không có full code public, nhưng logic cơ bản: Load model từ HF, xử lý multi-turn bằng cách append history vào prompt, rồi gọi generate. Ví dụ usage: python chat.py --model GSAI-ML/LLaDA-8B-Instruct --steps 16 (tăng steps cho chất lượng tốt hơn).02e212
+Snippet tương tự từ variants (e.g., handling device và padding):
+device = next(model.parameters()).device
+prompt = prompt.to(device)
+x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(device)
+x[:, :prompt.shape[1]] = prompt.clone()
+# ... (tương tự generate.py)
+Từ modeling.py (Model definition, đề cập trong discussions):
+Đây là phần core cho Transformer backbone với bidirectional attention (no causal mask). Không có full code, nhưng discussions chỉ ra nó sử dụng cross-entropy loss trên masked tokens, và là upper bound của negative log-likelihood.bfe407e44931
+Khác biệt với BERT: Masking ratio random [0,1] thay vì fixed, làm LLaDA thành generative model.
+Training (Không public full, nhưng guidelines):
+Từ GUIDELINES.md: Tham chiếu Section 2.2 paper cho pre-training (AdamW optimizer, LR 4e-4, 2.3T tokens). SFT: Mask chỉ response, 4.5M pairs, 3 epochs, LR 2.5e-5.
+Adapt từ SMDM repo (có open-source training code tương tự).c9d43f
+Nếu bạn cần code cụ thể hơn (e.g., fork repo để chạy), hãy clone repo và khám phá. Variants như LLaDA-V (https://github.com/ML-GSAI/LLaDA-V) có full training framework cho multimodal.7618cd978ada Nếu "source cide" ám chỉ cái khác, hãy làm rõ nhé!
