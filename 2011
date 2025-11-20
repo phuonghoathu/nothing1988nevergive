@@ -1,0 +1,215 @@
+Dựa trên nội dung hình ảnh bạn cung cấp và thông tin từ paper/repo của LLaDA (Large Language Diffusion with All-to-all Masking), dưới đây là câu trả lời chi tiết cho từng mục trong danh sách công việc (To-Do list) của bạn.
+Tôi sẽ bám sát cấu trúc phân cấp trong hình ảnh để bạn dễ theo dõi.
+1. LLaDA 推論 (Suy luận với LLaDA)
+Thiết lập phương pháp suy luận (推論方法の確立)
+Cơ chế: LLaDA không hoạt động theo cơ chế "tự hồi quy" (autoregressive - đoán từ tiếp theo) như GPT hay LLaMA truyền thống. Nó hoạt động dựa trên Diffusion (khuyếch tán).
+Quá trình suy luận bắt đầu từ một chuỗi nhiễu (hoặc các token [MASK]) và dần dần "khử nhiễu" để hình thành câu hoàn chỉnh qua nhiều bước (steps).
+Để thiết lập, bạn cần sử dụng code trong thư mục inference hoặc generate của repo GitHub.
+Lệnh cơ bản: Bạn cần chạy script Python load model và thực hiện sampling (ví dụ: 64 bước diffusion).
+Khảo sát về hiệu năng được báo cáo chung (一般的に報告されている性能について調査)
+Nghiên cứu hiệu năng chung (一般的な性能リサーチ):
+Kết quả: Paper báo cáo rằng LLaDA (phiên bản 8B) có khả năng cạnh tranh và thậm chí vượt trội so với LLaMA 3 8B ở các tác vụ Zero-shot và In-context learning.
+Ưu điểm: Vì là mô hình Diffusion, nó có khả năng nhìn thấy toàn bộ ngữ cảnh (bidirectional context) ngay từ đầu, giúp việc lên kế hoạch cho câu văn tốt hơn so với mô hình trái-sang-phải truyền thống.
+Có đáp ứng được LongContext (giả định 45000 token) không? (LongContext (45000tokenを想定) に対応できるか):
+Đánh giá rủi ro: Rất khó.
+Lý do kỹ thuật:
+Giới hạn đào tạo: LLaDA 8B thường được khởi tạo từ weights của LLaMA 3 hoặc đào tạo với chiều dài ngữ cảnh (Context Length) tiêu chuẩn (thường là 8K hoặc 128K tùy phiên bản LLaMA gốc). Nếu phiên bản pre-trained chỉ hỗ trợ 8K, việc đưa vào 45K token sẽ làm vỡ cấu trúc Positional Embeddings (RoPE).
+Vấn đề bộ nhớ (OOM): Mô hình Diffusion cần xử lý toàn bộ chuỗi input cùng lúc (không dùng KV Cache như AR nhưng ma trận Attention là N^2). Với 45.000 token, ma trận Attention sẽ cực kỳ lớn, dễ gây tràn bộ nhớ VRAM nếu không dùng các kỹ thuật như RingAttention.
+Kết luận: Nếu không có phiên bản "Long" chuyên biệt, việc chạy 45k token trên LLaDA tiêu chuẩn khả năng cao sẽ thất bại hoặc cho ra kết quả vô nghĩa. Bạn cần kiểm tra xem repo có hỗ trợ "extrapolation" (ngoại suy) cho RoPE không.
+2. LLaDAでSFTできるか確認 (Kiểm tra xem có thể SFT với LLaDA không)
+Đầu tiên xác nhận xem có cách làm không → Nếu không thì báo cáo lại cũng OK (まずはやる方法があるか確認...)
+Câu trả lời: CÓ.
+Chi tiết:
+LLaDA hỗ trợ Supervised Fine-Tuning (SFT). Paper đề cập rõ ràng đến việc Instruction Tuning để tạo ra mô hình "Instruct".
+Trong repo GitHub ML-GSAI/LLaDA, thường sẽ có file train_sft.py hoặc hướng dẫn trong phần training. Cơ chế train cũng tương tự như pre-training nhưng trên tập dữ liệu instruction (input-output pairs).
+Loss function vẫn là Diffusion Loss (dự đoán các token bị mask), nhưng dữ liệu đầu vào sẽ được format theo dạng prompt mẫu.
+Chuẩn bị môi trường và code để có thể sử dụng ngay cả khi thay đổi dữ liệu phía Recruit (Recruitサイドでデータを変えても利用できるように...)
+Hành động cần làm:
+Chuẩn hóa Data Loader: Viết một script Python wrapper để đọc dữ liệu của Recruit và chuyển đổi nó sang định dạng JSONL/Arrow mà LLaDA yêu cầu (thường là dạng {"text": "..."} hoặc {"instruction": "...", "response": "..."}).
+Config File: Tách các tham số train (learning rate, path data, batch size) ra khỏi code, để vào file .yaml hoặc .json. Khi Recruit thay đổi data, chỉ cần đổi đường dẫn trong file config.
+Dockerize (Khuyên dùng): Đóng gói môi trường (PyTorch, thư viện LLaDA) vào Docker để đảm bảo tính nhất quán khi triển khai sang máy chủ khác.
+3. LLaDA以外何でも良いのでDLLMのめぼしい手法の調査 (Khảo sát các phương pháp DLLM đáng chú ý khác ngoài LLaDA)
+Dưới đây là các mô hình ngôn ngữ khuếch tán (Diffusion LM) hoặc Non-Autoregressive (NAR) nổi bật khác để bạn tham khảo:
+SEDD (Scalable Discrete Diffusion):
+Một đối thủ lớn của LLaDA. Sử dụng phương pháp khuếch tán rời rạc (discrete diffusion) thay vì continuous. Nó rất mạnh trong việc tạo văn bản chất lượng cao.
+MDLM (Masked Discrete Diffusion for Language Modeling):
+Tập trung vào hiệu suất lấy mẫu (sampling efficiency).
+Plaid (1B):
+Mô hình này nổi tiếng với khả năng sinh văn bản cực nhanh (nhanh hơn GPT-2) bằng cách dự đoán nhiều token cùng lúc.
+SSD-LM (Semi-Autoregressive Simplex-Based Diffusion):
+Kết hợp giữa tự hồi quy và khuếch tán, tạo ra các khối văn bản thay vì từng từ một.
+Lời khuyên: Hiện tại (thời điểm paper 2502.09992 ra mắt), LLaDA đang là SOTA (State-of-the-art) về khả năng mở rộng (scaling) lên kích thước 8B và tận dụng kiến trúc LLaMA. Các mô hình khác thường nhỏ hơn hoặc mang tính học thuật nhiều hơn là ứng dụng thực tế.
+Tóm tắt kế hoạch hành động (Dựa trên ghi chú Ref):
+Ngắn hạn: Clone repo LLaDA, chạy thử script inference với câu ngắn để đảm bảo môi trường hoạt động.
+Kiểm chứng 45k token: Thử tạo dummy input dài 45k token và đưa vào model (chưa cần quan tâm output đúng sai, chỉ check xem có sập VRAM không).
+SFT Pipeline: Tìm script train trong repo, chạy thử với một tập dữ liệu nhỏ (100 mẫu) để verify quy trình (pipeline) trước khi dùng data thật của Recruit.
+
+
+Dưới đây là phân tích chuyên sâu (deep dive) vào Point 1: LLaDA 推論 (Suy luận với LLaDA), đi sâu vào các khía cạnh kỹ thuật dựa trên paper và kiến trúc của mô hình Diffusion Language Model.
+1. LLaDA 推論 (Suy luận với LLaDA)
+1.1. 推論方法の確立 (Thiết lập phương pháp suy luận)
+Đây là bước quan trọng nhất vì cơ chế của LLaDA khác hoàn toàn với các LLM truyền thống (GPT, LLaMA).
+Sự khác biệt cốt lõi (Core Mechanism):
+LLM thường (Autoregressive - AR): Dự đoán từng từ một từ trái sang phải (P(x_t | x_{<t})). Dùng KV Cache để tăng tốc.
+LLaDA (Masked Diffusion): Khởi tạo một chuỗi toàn "nhiễu" (các token bị mask). Sau đó, qua T bước (steps), mô hình dần dần thay thế các mask bằng từ có nghĩa dựa trên ngữ cảnh toàn cục (P(x_0 | x_t)).
+Quy trình suy luận cần thiết lập (Implementation Details):
+Sampling Strategy: Bạn không chỉ đơn giản gọi model.generate(). Bạn cần cấu hình bộ lấy mẫu (Sampler), ví dụ như DDIM hoặc DPM-Solver.
+Số bước (Steps): Cần xác định số bước tối ưu.
+Ít bước (ví dụ 32 steps): Nhanh, nhưng văn bản có thể kém mạch lạc.
+Nhiều bước (ví dụ 128 steps): Chất lượng cao, nhưng độ trễ (latency) lớn.
+Khuyến nghị: Bắt đầu với 64 steps như mặc định của paper.
+Re-masking: LLaDA sử dụng cơ chế "re-masking strategy". Tại mỗi bước, nó dự đoán toàn bộ câu, giữ lại các từ có độ tin cậy cao (high confidence) và mask lại các từ độ tin cậy thấp để sửa tiếp ở bước sau.
+1.2. 一般的に報告されている性能について調査 (Điều tra về hiệu năng được báo cáo)
+a. 一般的な性能リサーチ (Nghiên cứu hiệu năng chung)
+So sánh với LLaMA 3 8B:
+LLaDA (8B) được khởi tạo từ weights của LLaMA 3 8B, nên nó thừa hưởng tri thức của LLaMA 3.
+Điểm mạnh: Trong các bài test về MMLU (kiến thức đa lĩnh vực) và GSM8K (toán học), LLaDA đạt điểm số tương đương hoặc nhỉnh hơn LLaMA 3 8B trong chế độ Zero-shot.
+Khả năng đặc biệt - In-context Learning (ICL):
+Do LLaDA nhìn thấy toàn bộ input (bao gồm cả các ví dụ mẫu và câu hỏi) cùng một lúc nhờ cơ chế Attention 2 chiều (Bidirectional Attention), nó thường nắm bắt cấu trúc prompt tốt hơn các mô hình AR (vốn chỉ nhìn thấy quá khứ).
+b. LongContext (45000 token) に対応できるか (Có đáp ứng được 45.000 token không?)
+Đây là điểm tắc nghẽn kỹ thuật (Technical Bottleneck) lớn nhất bạn cần lưu ý.
+Phân tích khả năng (Feasibility Analysis):
+Kết luận: Khả năng cao là KHÔNG chạy được trực tiếp (Out-of-the-box).
+Lý do kỹ thuật 1: Giới hạn Positional Embedding (RoPE):
+LLaDA 8B thường được train với context length là 8.192 (8k) hoặc tối đa 32k token (tùy vào việc nó dùng base model nào của LLaMA 3).
+Đưa vào 45k token sẽ vượt quá "vùng nhìn thấy" của RoPE. Mô hình sẽ bị "loạn" vị trí và output ra rác (gibberish) trừ khi áp dụng các kỹ thuật RoPE scaling (như Yarn hoặc NTK-Aware), nhưng điều này cần can thiệp vào code config.
+Lý do kỹ thuật 2: Chi phí bộ nhớ (Memory Cost - Quadratic Attention):
+Đây là vấn đề nghiêm trọng nhất.
+Trong mô hình Diffusion, vì cần attention 2 chiều (tất cả token nhìn thấy nhau), ma trận Attention có kích thước 45.000 \times 45.000.
+Tính toán nhanh:
+Ma trận Attention fp16 cho 45k token sẽ tốn hàng chục GB VRAM chỉ cho việc tính toán trung gian (activation memory), chưa kể trọng số model.
+Một GPU A100 (80GB) cũng có thể bị OOM (Out of Memory) nếu không dùng FlashAttention-2 hoặc RingAttention.
+Lý do kỹ thuật 3: Tốc độ suy luận (Latency):
+Giả sử bạn giải quyết được vấn đề bộ nhớ. Với mô hình AR, bạn chỉ tốn thời gian để sinh ra output (ví dụ 100 token).
+Với LLaDA, để sinh ra output, nó phải xử lý toàn bộ 45.000 token lặp đi lặp lại qua 64 bước. Thời gian phản hồi sẽ cực kỳ lâu (có thể hàng phút hoặc hàng giờ).
+Hành động đề xuất (Action Plan cho Point 1)
+Để trả lời dứt khoát các mục trong hình cho sếp/khách hàng, bạn nên thực hiện các bước kiểm tra sau:
+Check Config: Mở file config.json trong model LLaDA tải về, tìm dòng max_position_embeddings. Nếu là 8192, thì 45k token là bất khả thi nếu không finetune lại.
+Stress Test: Viết một script Python nhỏ tạo một chuỗi random 45.000 token và feed vào model.
+Kịch bản: Nếu lỗi CUDA Out of memory \rightarrow Báo cáo là cần hạ tầng phần cứng đặc biệt.
+Kịch bản: Nếu chạy được nhưng output vô nghĩa \rightarrow Báo cáo là model không hỗ trợ độ dài này về mặt toán học.
+Giải pháp thay thế: Nếu bắt buộc phải dùng 45k token, đề xuất sử dụng phương pháp RAG (Retrieval Augmented Generation) (chia nhỏ văn bản) thay vì nhồi toàn bộ vào context.
+
+
+
+
+Dưới đây là phân tích chi tiết (Deep Dive) cho Point 2: LLaDAでSFTできるか確認 (Kiểm tra khả năng SFT với LLaDA).
+Point này tập trung vào tính khả thi (Feasibility) và khả năng tái sử dụng (Reproducibility) của quy trình huấn luyện.
+2. LLaDAでSFTできるか確認 (Kiểm tra xem có thể SFT với LLaDA không)
+2.1. まずはやる方法があるか確認 (Xác nhận phương pháp thực hiện)
+Dưới đây là bảng so sánh chi tiết các phương pháp/mô hình DLLM (Diffusion Language Language Models) và Non-Autoregressive (NAR) đáng chú ý để giải quyết Point 3: Khảo sát các phương pháp DLLM khác.
+Mục tiêu của bảng này là giúp bạn đánh giá xem liệu có lựa chọn nào tốt hơn LLaDA cho bài toán của Recruit hay không, đặc biệt là xét đến yếu tố Long Context (45k tokens) và khả năng SFT.
+Bảng So Sánh Các Phương Pháp Generative AI Cho Text
+| Tiêu chí so sánh | LLaDA (Đề xuất chính) | SEDD (Scalable Discrete Diffusion) | MDLM (Masked Discrete Diffusion) | LLaMA 3 / AR Models (Đối chứng) |
+|---|---|---|---|---|
+| Kiến trúc cốt lõi | Masked Diffusion (Dựa trên LLaMA weights) | Discrete Diffusion (State-space / Absorbing) | Masked Diffusion (Tương tự BERT nhưng generative) | Autoregressive (Tự hồi quy - Trái sang phải) |
+| Quy mô (Scaling) | Cao (8B+)
+Tận dụng được weight của LLaMA 3. | Trung bình
+Thường train từ đầu (scratch), tốn kém để scale lớn. | Trung bình
+Chủ yếu dùng cho nghiên cứu, ít model lớn public. | Rất cao (70B - 400B+)
+Chuẩn mực ngành. |
+| Tốc độ suy luận | Trung bình
+Cần ~64 bước để khử nhiễu toàn bộ câu. | Chậm
+Cần nhiều bước lấy mẫu (sampling steps). | Nhanh hơn SEDD
+Cơ chế mask hiệu quả hơn nhưng vẫn chậm hơn AR cho câu ngắn. | Nhanh (Token-by-token)
+Rất nhanh nhờ KV Cache, đặc biệt là TTFT (Time to first token). |
+| Khả năng SFT | Có (Dễ)
+Hỗ trợ Instruction Tuning, pipeline giống LLaMA. | Khó
+Hệ sinh thái code SFT chưa trưởng thành. | Trung bình
+Cần tự viết pipeline loss function tùy chỉnh. | Rất Dễ
+Hỗ trợ tận răng (HuggingFace, Axolotl, Unsloth). |
+| Xử lý Long Context (45k) | Rất Thấp
+Bị giới hạn bởi O(N^2) Attention & Pre-trained context (8k). | Thấp
+Chi phí tính toán tăng gấp 4 lần khi độ dài tăng gấp đôi. | Thấp
+Gặp vấn đề tương tự về bộ nhớ. | Cao
+Có các biến thể hỗ trợ 128k - 1M token (FlashAttn, RingAttn). |
+| Ưu điểm vượt trội | Khả năng In-context Learning cực tốt; Tận dụng được hệ sinh thái LLaMA. | Chất lượng sinh văn bản cao, logic chặt chẽ về mặt toán học. | Đơn giản hơn SEDD, dễ cài đặt (implement) hơn. | Ổn định, cộng đồng lớn, Context dài tốt nhất hiện nay. |
+| Đánh giá cho dự án này | ⭐⭐⭐⭐
+(Lựa chọn tốt nhất nếu bắt buộc dùng Diffusion) | ⭐⭐
+(Quá nặng về nghiên cứu, khó ứng dụng ngay) | ⭐⭐⭐
+(Thay thế tiềm năng nếu LLaDA thất bại) | ⭐⭐⭐⭐⭐
+(Lựa chọn an toàn nhất nếu cần chạy 45k token ngay lập tức) |
+Phân tích chi tiết các đối thủ
+1. Tại sao LLaDA vẫn là ứng cử viên số 1 trong nhóm Diffusion?
+ * Lý do: "Đứng trên vai người khổng lồ".
+ * Hầu hết các mô hình Diffusion (như SEDD, MDLM) phải train từ con số 0 (from scratch). Việc này tốn hàng triệu USD tiền GPU để đạt được độ thông minh như GPT-3.
+ * LLaDA khôn ngoan hơn: Nó lấy "bộ não" (weights) của LLaMA 3 8B và chỉ train lại cách "khử nhiễu". Do đó, nó thông minh ngay lập tức mà không cần train quá lâu.
+2. SEDD (Scalable Discrete Diffusion)
+ * Điểm mạnh: Đây là mô hình đặt nền móng cho Generative Diffusion hiện đại trên văn bản rời rạc. Nó tạo ra văn bản rất mượt.
+ * Điểm yếu: Không có Pre-trained model lớn (ví dụ 7B, 8B) public sẵn để bạn dùng ngay cho tiếng Nhật/Anh mức độ cao. Bạn sẽ phải tự pre-train \rightarrow Không khả thi cho dự án ngắn hạn.
+3. Plaid 1B (Không có trong bảng nhưng đáng nhắc tới)
+ * Nếu sếp bạn hỏi về tốc độ, hãy nhắc đến Plaid.
+ * Nó là dạng Non-Autoregressive cực đoan, có thể sinh ra cả đoạn văn dài chỉ trong 1 lần chạy (hoặc rất ít bước).
+ * Tuy nhiên, chất lượng văn bản thường kém mạch lạc hơn LLaDA và LLaMA.
+Kết luận & Đề xuất (Dành cho báo cáo)
+Dựa trên yêu cầu của Point 3, bạn có thể kết luận như sau:
+ * Về mặt công nghệ: LLaDA hiện là phương pháp tiếp cận thực tế nhất (SOTA) trong nhóm Diffusion LM vì nó kế thừa được trí tuệ của LLaMA 3. Các phương pháp khác như SEDD hay MDLM mang tính học thuật cao, thiếu model pre-trained đủ lớn.
+ * Về rủi ro Long Context: Không có mô hình Diffusion nào (kể cả LLaDA) hiện nay xử lý tốt 45.000 token mà không cần kỹ thuật tối ưu bộ nhớ cực kỳ phức tạp.
+ * Hướng đi (Next Step):
+   * Nếu mục tiêu là nghiên cứu công nghệ mới: Chọn LLaDA.
+   * Nếu mục tiêu là sản phẩm chạy ổn định với 45k token: Nên quay lại với LLaMA-3-8B-Gradient (hỗ trợ 1M context) hoặc các mô hình AR truyền thống, vì Diffusion chưa sẵn sàng cho context siêu dài trên phần cứng thông thường.
+
+
+
+Dưới đây là phân tích chi tiết (Deep Dive) cho Point 2: LLaDAでSFTできるか確認 (Kiểm tra khả năng SFT với LLaDA).
+Point này tập trung vào tính khả thi (Feasibility) và khả năng tái sử dụng (Reproducibility) của quy trình huấn luyện.
+2. LLaDAでSFTできるか確認 (Kiểm tra xem có thể SFT với LLaDA không)
+2.1. まずはやる方法があるか確認 (Xác nhận phương pháp thực hiện)
+ * Kết luận: HOÀN TOÀN CÓ THỂ (YES).
+ * Cơ chế kỹ thuật (Technical Mechanism):
+   * Việc SFT (Supervised Fine-Tuning) trên LLaDA thực chất là quá trình dạy model "khử nhiễu có điều kiện" (Conditional Denoising).
+   * Dữ liệu: Input là cặp (Instruction, Response).
+   * Masking Strategy trong SFT: Khác với Pre-training (mask ngẫu nhiên toàn bộ), trong SFT, chúng ta thường giữ nguyên phần Instruction (không mask hoặc mask ít) và tập trung mask phần Response.
+   * Mục tiêu: Model học cách tái tạo lại Response dựa trên ngữ cảnh rõ ràng của Instruction.
+     
+     
+     (Mô hình học cách dự đoán nhiễu \epsilon để khôi phục x_0 (Response) tại bước t, với điều kiện là Instruction).
+ * Kiểm tra Repo:
+   * Trong GitHub ML-GSAI/LLaDA, hãy tìm file train.py hoặc thư mục experiments/sft.
+   * Paper LLaDA xác nhận họ đã tạo ra phiên bản LLaDA-Instruct bằng cách SFT trên tập dữ liệu instruction tiêu chuẩn. Điều này chứng minh code base đã hỗ trợ sẵn.
+2.2. Recruitサイドでデータを変えても利用できるように環境およびコード整備 (Chuẩn bị môi trường & code để phía Recruit dễ dàng thay đổi dữ liệu)
+Đây là yêu cầu về MLOps và Software Engineering. Để đáp ứng yêu cầu "thay đổi dữ liệu cũng dùng được ngay", bạn cần xây dựng một Data Pipeline tách biệt logic code và dữ liệu.
+Dưới đây là checklist kỹ thuật cụ thể:
+a. Chuẩn hóa định dạng đầu vào (Data Standardization)
+Thay vì để code đọc trực tiếp file raw của Recruit (csv, excel, txt...), hãy quy định một "Interface Format" chuẩn.
+ * Format đề xuất: JSONL (JSON Lines).
+ * Cấu trúc:
+   {"instruction": "Hãy tóm tắt văn bản sau...", "input": "Nội dung văn bản...", "output": "Bản tóm tắt là..."}
+
+ * Lợi ích: Phía Recruit chỉ cần cung cấp file JSONL theo mẫu này, code của bạn sẽ tự động chạy mà không cần sửa đổi dòng nào.
+b. Pipeline tiền xử lý tự động (Preprocessing Pipeline)
+Bạn cần viết một script preprocess.py thực hiện các việc sau:
+ * Tokenization: Chuyển text thành token ID bằng Tokenizer của LLaDA (thường là tokenizer của LLaMA 3).
+ * Packing/Padding:
+   * Vì LLaDA cần input có độ dài cố định (ví dụ 4096), bạn cần code để cắt ngắn (truncate) hoặc đệm (pad) dữ liệu.
+   * Lưu ý quan trọng: Với mô hình Diffusion, việc padding (thêm số 0) cần cẩn thận để không bị model hiểu nhầm là một phần của nhiễu cần khử. Masking matrix cần được set sao cho model bỏ qua các token padding này.
+c. Config Management (Quản lý cấu hình)
+Tuyệt đối không hardcode đường dẫn file (hard-coded path) trong code training.
+ * Sử dụng thư viện như Hydra hoặc đơn giản là file .yaml.
+ * Ví dụ file config.yaml:
+   data:
+  train_path: "./data/recruit_data_v1.jsonl"  <-- Recruit chỉ cần sửa dòng này
+  validation_split: 0.1
+training:
+  batch_size: 4
+  learning_rate: 2e-5
+  num_epochs: 3
+model:
+  base_model_path: "ML-GSAI/LLaDA-8B"
+
+d. Tối ưu tài nguyên (LoRA/QLoRA)
+Để "Recruit side" có thể chạy được (giả sử họ không có cụm GPU khủng H100), bạn cần tích hợp LoRA (Low-Rank Adaptation).
+ * Vấn đề: Full Fine-tuning model 8B cần rất nhiều VRAM (xấp xỉ 80GB+ cho cả optimizer states).
+ * Giải pháp: Sử dụng LoRA để chỉ train khoảng 1-2% tham số.
+ * Action: Kiểm tra xem repo LLaDA có hỗ trợ thư viện peft của HuggingFace không. Nếu có, hãy bật nó lên. Điều này giúp phía Recruit có thể train trên các GPU dân dụng (như RTX 3090/4090).
+Hành động đề xuất (Action Plan cho Point 2)
+Để báo cáo hoàn thành mục này, bạn nên thực hiện theo trình tự:
+ * Tạo mẫu dữ liệu (Data Mockup): Tạo 1 file dummy_data.jsonl gồm 10 dòng theo cấu trúc Instruction-Response.
+ * Dry Run SFT: Chạy lệnh train của LLaDA trên file dummy này.
+   * Mục tiêu: Đảm bảo code chạy từ đầu đến cuối không lỗi (End-to-end), loss giảm.
+ * Đóng gói (Packaging): Viết file README_SFT.md hướng dẫn phía Recruit:
+   * Bước 1: Bỏ dữ liệu vào đâu.
+   * Bước 2: Chỉnh file config nào.
+   * Bước 3: Chạy lệnh python train.py --config config.yaml.
+ * Cảnh báo về Compute: Ghi rõ yêu cầu phần cứng (ví dụ: "Cần tối thiểu 1 GPU 24GB VRAM nếu dùng LoRA").
+
