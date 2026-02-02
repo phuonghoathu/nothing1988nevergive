@@ -1,0 +1,4 @@
+Chào bạn, tôi hiểu rồi. Tôi sẽ viết cho bạn một đoạn code Python hoàn chỉnh để thực hiện quy trình: Đọc KB -> Sinh dữ liệu biến thể (Augmentation) -> Kiểm tra chéo (Verification) -> Xuất file JSONL.
+Đoạn code này được thiết kế để kết nối với các Model Open Source đang chạy qua vLLM, Ollama hoặc LocalAI (miễn là có giao diện tương thích OpenAI API).
+1. Chuẩn bị Prompt "Bậc Thầy"
+Để đảm bảo model nhỏ (như 32B hoặc 20B) sinh đúng, chúng ta cần một System Prompt cực kỳ khắt khe.
