@@ -1,0 +1,100 @@
+import json
+import requests
+
+# Cấu hình kết nối tới Local LLM (vLLM/Ollama)
+API_URL = "http://localhost:8000/v1/chat/completions" 
+API_KEY = "token-tuy-y" # Thường để trống nếu chạy local
+
+def call_local_llm(system_prompt, user_prompt):
+    payload = {
+        "model": "qwen2.5-32b-instruct", # Thay bằng tên model bạn đang chạy
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        "temperature": 0.7,
+        "response_format": { "type": "json_object" } # Ép model trả về JSON
+    }
+    response = requests.post(API_URL, json=payload)
+    return response.json()['choices'][0]['message']['content']
+
+# 1. Hàm sinh dữ liệu (Augmentation)
+def generate_variations(intent_name, situation_name):
+    system_prompt = """Bạn là chuyên gia ngôn ngữ tiếng Nhật. 
+    Dựa trên Intent và Situation cho trước, hãy tạo ra 5 câu hỏi thực tế mà người dùng thường hỏi.
+    Yêu cầu: Câu văn tự nhiên, đa dạng (lịch sự, ngắn gọn, lo lắng).
+    Trả về định dạng JSON: {"variations": ["câu 1", "câu 2", ...]}"""
+    
+    user_prompt = f"Intent: {intent_name}\nSituation: {situation_name}"
+    return json.loads(call_local_llm(system_prompt, user_prompt))['variations']
+
+
+import pandas as pd
+
+# Giả sử bạn có file kb.csv từ ảnh 1
+kb_df = pd.read_csv("kb_data.csv") 
+final_data = []
+
+for index, row in kb_df.iterrows():
+    print(f"Đang xử lý: {row['intent_name']} - {row['situation_name']}")
+    
+    # Sinh 5 câu hỏi biến thể
+    variations = generate_variations(row['intent_name'], row['situation_name'])
+    
+    for v in variations:
+        # Bước kiểm tra cực kỳ quan trọng
+        if verify_sample(v, row['intent_name']):
+            sample = {
+                "instruction": "Phân loại ý định khách hàng Nhật Bản.",
+                "input": v,
+                "output": json.dumps({
+                    "intent_id": row['intent_id'],
+                    "situation_id": row['situation_id']
+                }, ensure_ascii=False)
+            }
+            final_data.append(sample)
+
+# Xuất ra file JSONL để mang đi Finetune
+with open("qwen_finetune_data.jsonl", "w", encoding="utf-8") as f:
+    for entry in final_data:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+print(f"Hoàn thành! Đã tạo được {len(final_data)} mẫu chất lượng.")
+
+
+Khi bạn chuyển sang phương pháp này, bạn sẽ tạo ra một bộ dữ liệu huấn luyện mới (Training Dataset) dựa trên cả hai nguồn:
+ * Gốc (KB): Lấy các định nghĩa, intent_id, situation_id làm khung xương.
+ * Dữ liệu thực tế (Inquiry Data): Lấy các câu hỏi người dùng đã hỏi trong quá khứ làm bài tập thực hành cho model.
+ * Dữ liệu sinh thêm (Augmented Data): Dùng AI khác để tạo ra các biến thể câu hỏi dựa trên mô tả của KB nhằm làm phong phú bộ bài tập.
+Quy trình "Chế biến" dữ liệu
+Dưới đây là cách chúng ta kết hợp chúng lại để mô hình Qwen không cần nhìn KB mà vẫn trả ra kết quả chuẩn:
+| Nguồn dữ liệu | Cách xử lý | Mục đích |
+|---|---|---|
+| KB (2.000 dòng) | Chuyển mỗi dòng thành một bài học: "Mô tả này" = "Cặp ID này". | Định nghĩa luật chơi cho Model. |
+| Data Train cũ (Ảnh 2) | Khớp câu hỏi thực tế với ID tương ứng từ KB. | Giúp model làm quen với cách hành văn thật của khách hàng. |
+| AI Augmentation | Từ 1 dòng KB, sinh ra 10-20 câu hỏi tương đương. | Để model không bị "học vẹt" từng từ mà hiểu được ý nghĩa (Semantic). |
+Ví dụ thực tế từ ảnh của bạn:
+Giả sử trong KB (Ảnh 1) có dòng:
+ * intent_id: I1214
+ * situation_name: 登録番号利用不可 (Số đăng ký không sử dụng được)
+Trong file dữ liệu huấn luyện mới, chúng ta sẽ sinh ra các Record mới như sau:
+ * Record 1 (Lấy từ KB): "User: 登録番号利用不可 -> Assistant: {"intent_id": "I1214", "situation_id": "CI1214_1"}"
+ * Record 2 (Sinh thêm): "User: Đăng ký số điện thoại nhưng hệ thống báo không dùng được thì làm sao? -> Assistant: {"intent_id": "I1214", "situation_id": "CI1214_1"}"
+ * Record 3 (Từ data thực tế): "User: [Câu hỏi thực tế trong ảnh 2 của bạn] -> Assistant: [ID tương ứng]"
+Tại sao đây là cách làm "Sạch" nhất?
+Khi bạn đưa 2.000 dòng vào prompt như hiện tại, Qwen đang làm bài thi theo kiểu "Lật sách" (Open book). Cuốn sách quá dày khiến nó tìm chậm và nhầm.
+Khi bạn Finetune theo các record mới này, Qwen đang làm bài thi theo kiểu "Thuộc lòng" (Closed book).
+ * Nó đã học qua 20.000 ví dụ trước đó.
+ * Khi thấy một câu hỏi, các neuron trong model sẽ tự kích hoạt đến mã ID chính xác mà không cần tốn thời gian đọc lại 2.000 dòng KB nữa.
+> Lưu ý quan trọng: Bạn không cần phải viết tay 20.000 record này. Chúng ta sẽ dùng script để lấy intent_name + situation_name từ file KB của bạn rồi "đẩy" qua một model mạnh (như GPT-4o hoặc Claude 3.5) để nó tự động tạo ra file JSONL cho bạn.
+> 
+Bạn có muốn tôi viết một Prompt "Master" để bạn đưa vào ChatGPT/Claude giúp nó tự động sinh ra bộ Record này từ nội dung trong ảnh 1 không?
+
+# 2. Hàm kiểm tra chéo (Verification) - Để đảm bảo AI không sinh sai
+def verify_sample(question, original_intent):
+    system_prompt = f"Bạn là giám thị. Hãy xác định câu hỏi sau có thuộc nhóm '{original_intent}' không? Trả về JSON: {'is_correct': true/false}"
+    user_prompt = f"Câu hỏi: {question}"
+    result = json.loads(call_local_llm(system_prompt, user_prompt))
+    return result.get('is_correct', False)
+
+
