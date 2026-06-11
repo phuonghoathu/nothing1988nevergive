@@ -1,0 +1,32 @@
+Dựa trên hình ảnh bảng viết tay (whiteboard) với các ghi chú nhanh, sơ đồ luồng công việc (workflow) và các thuật ngữ kỹ thuật (QA, Bug, L3, Jira, Daily, Weekly, Check log...), dưới đây là bảng cấu trúc các kịch bản kiểm thử (Test Cases / Test Scenarios) được hệ thống hóa lại một cách rõ ràng và chuyên nghiệp.
+## 1. Test Suite: Quản lý Luồng Xử lý Lỗi & Vận Hành (Bug & Incident Lifecycle)
+### 📌 Kịch bản 1: Luồng xử lý Bug từ QA đến Đội ngũ Phát triển
+ * **Mục tiêu:** Đảm bảo luồng báo cáo và tiếp nhận lỗi giữa QA và các bên liên quan diễn ra đúng quy trình ghi trên bảng.
+ * **Các bước kiểm thử (Test Steps):**
+   1. QA phát hiện lỗi và tạo ticket lỗi trên hệ thống quản lý (Jira).
+   2. Kiểm tra việc gắn nhãn/phân loại lỗi (Daily, Weekly, hoặc L3).
+   3. Chuyển trạng thái ticket sang cho đội ngũ tương ứng (Dev/St).
+ * **Kết quả mong đợi (Expected Result):** Ticket được tạo thành công với đầy đủ thông tin, log đính kèm và gửi thông báo đến đúng người chịu trách nhiệm.
+### 📌 Kịch bản 2: Quy trình Phân loại và Xử lý Lỗi L3 (L3 Support & Escalation)
+ * **Mục tiêu:** Xác định đúng luồng xử lý đối với các lỗi nghiêm trọng thuộc cấp độ L3.
+ * **Các bước kiểm thử (Test Steps):**
+   1. Ghi nhận một sự cố được định nghĩa là L3 (từ luồng Weekly hoặc Daily).
+   2. Hệ thống hoặc người điều phối thực hiện chuyển tiếp (escalate) sang nhóm xử lý L3.
+   3. Kiểm tra việc kiểm tra log (Check log) và đối chiếu thông tin (VRN với L3).
+ * **Kết quả mong đợi (Expected Result):** Sự cố L3 được ưu tiên xử lý, log được trích xuất chính xác để phục vụ điều tra, và có sự phản hồi đồng bộ giữa các bên.
+### 📌 Kịch bản 3: Tích hợp Hệ thống Quản lý và Đồng bộ Trạng thái (Jira / IMF Integration)
+ * **Mục tiêu:** Đảm bảo dữ liệu luân chuyển mượt mà giữa các công cụ quản lý tác vụ (Jira, IMF, Mail...).
+ * **Các bước kiểm thử (Test Steps):**
+   1. Cập nhật trạng thái của một lỗi trên một cổng thông tin (ví dụ: đóng ticket hoặc chuyển trạng thái sang "Rollback").
+   2. Kiểm tra xem hệ thống có tự động gửi email thông báo (Mail tem) hoặc cập nhật tự động sang Jira (Jira/..) hay không.
+ * **Kết quả mong đợi (Expected Result):** Trạng thái được đồng bộ thời gian thực giữa các nền tảng, không có độ trễ hoặc mất mát dữ liệu.
+## 2. Ma trận Kịch bản Kiểm thử chi tiết (Test Cases Matrix)
+| Test Case ID | Thành phần / Quy trình | Mô tả kịch bản (Test Case Description) | Điều kiện tiên quyết (Prerequisites) | Kết quả mong đợi (Expected Result) |
+|---|---|---|---|---|
+| **TC_001** | QA & Bug Flow | Kiểm tra luồng tạo và duyệt Bug Daily từ QA sang hệ thống. | QA có tài khoản hợp lệ trên hệ thống. | Bug được ghi nhận, hiển thị trong danh sách "Daily". |
+| **TC_002** | Mail tem | Kiểm tra tính năng gửi email thông báo tự động khi có cập nhật trạng thái lỗi. | Cấu hình template mail (Mail tem) đã sẵn sàng. | Email gửi đi đúng định dạng, đúng người nhận với nội dung chính xác. |
+| **TC_003** | Check log & OMG | Kiểm tra quy trình kiểm tra log hệ thống khi xảy ra sự cố nghiêm trọng (OMG). | Hệ thống gặp sự cố hoặc có trigger giả lập lỗi. | Log được ghi nhận đầy đủ, không bị mã hóa lỗi, truy xuất được nguyên nhân gốc. |
+| **TC_004** | L3 & VRN | Kiểm tra việc đối chiếu thông tin phiên bản / định danh (VRN với L3). | Có dữ liệu cấu hình L3 và mã VRN. | Hệ thống khớp nối chính xác dữ liệu, không lệch thông tin cấu hình. |
+| **TC_005** | Rollback / Try | Kiểm tra kịch bản thử nghiệm thất bại và kích hoạt luồng quay lui (Rollback). | Tính năng Rollback được bật. | Hệ thống quay về trạng thái ổn định trước đó một cách an toàn, không mất dữ liệu người dùng. |
+> 💡 **Lời khuyên:** Dựa trên sơ đồ vẽ tay mang tính chất họp thảo luận (Brainstorming) này, bạn nên làm việc lại với Product Owner (PO) hoặc Tech Lead để làm rõ các chữ viết tắt đặc thù của dự án (như *VRN, IMF, OMG*) nhằm bổ sung dữ liệu kiểm thử (Test Data) chính xác nhất cho các bước trên.
+> 
