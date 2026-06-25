@@ -1,0 +1,22 @@
+Sự đính chính về cơ chế của Gemma 4 rất quan trọng, nó giúp chúng ta phân loại **Nhóm 3 (Advanced Decoding Algorithms)** một cách chuẩn xác tuyệt đối theo kiến trúc hệ thống hiện nay.
+Dưới đây là phần viết lại riêng cho **Nhóm 3**, được chia rõ ràng theo cấu trúc phân phối file và cách chia sẻ bộ nhớ:
+## NHÓM 3: ADVANCED DECODING ALGORITHMS (THUẬT TOÁN GIẢI MÃ NÂNG CAO)
+*Bản chất: Giữ nguyên mô hình chính, thay đổi chiến thuật sinh chữ từ "rặn từng từ một" sang "đoán trước hàng loạt rồi kiểm tra song song".*
+ * **Autoregressive Decoding:** Thuật toán sinh chữ truyền thống (Mô hình chạy N lần để sinh ra N token, từ sau phụ thuộc vào từ trước).
+ * **Speculative Decoding (Giải mã suy đoán):** Chiến thuật tổng thể: dùng một module/mô hình chạy cực nhanh để đoán mò trước K token, sau đó dùng mô hình chính duyệt lại toàn bộ chuỗi đoán đó trong đúng **1 lượt chạy (single forward pass)**.
+Kỹ thuật này được chia thành 3 trường phái kiến trúc rõ rệt:
+### A. Mô hình nháp độc lập (Independent Draft-Model)
+ * Hệ thống phải load **2 mô hình hoàn toàn biệt lập** (Ví dụ: Dùng Llama-68M làm nháp cho Llama-70B).
+ * *Nhược điểm:* Tốn thêm VRAM để lưu mô hình nhỏ, 2 mô hình không dùng chung bộ nhớ và dễ lệch phân phối chữ (đoán sai nhiều).
+### B. Module nháp cộng sinh (Dependent / Shared-KV Drafter) — *Trường hợp của Gemma 4*
+ * **Đặc điểm:** Module đoán mò (MTP Assistant) được phân phối thành **file vật lý riêng biệt**, nhưng khi chạy, nó **"ký sinh" trực tiếp vào mô hình cha**.
+ * **Cơ chế:** Nó không có bộ nhớ riêng mà **chia sẻ chung vùng nhớ KV-Cache** và lấy Activation từ layer của mô hình cha để tính toán.
+ * *Cách Deploy:* Khi chạy (như trong llama.cpp hay vLLM), phải truyền cả 2 tham số: -m model_chinh.gguf và --model-draft gemma-mtp-assistant.gguf.
+### C. Tự thân vận động (Draft-Model-Free / Internal MTP) — *Trường hợp của Qwen*
+ * **Đặc điểm:** Các đầu dự đoán song song được huấn luyện và **tích hợp chung vào 1 file vật lý duy nhất** với mô hình chính.
+ * **Cơ chế:** Mô hình tự dùng các luồng tính toán nội bộ để bắn ra một cụm từ tiếp theo mà không cần gọi đến bất kỳ module hay file phụ nào bên ngoài.
+ * *Cách Deploy:* Chỉ cần load đúng 1 file model duy nhất, engine (như vLLM) tự kích hoạt các đầu MTP bên trong để tăng tốc.
+### Các thuật ngữ bổ trợ quan trọng trong Nhóm 3:
+ * **Medusa / Eagle Heads:** Các tầng tuyến tính phụ (Heads) gắn vào block cuối của LLM để dự đoán các vị trí tương lai (t+1, t+2, t+3...). Eagle cải tiến hơn Medusa nhờ việc truyền thêm feature của token trước vào đầu dự đoán tiếp theo.
+ * **Tree-structured Attention (Tree-Attention):** Cơ chế chuyển các chuỗi đoán mò thành một "cây các trường hợp khả thi" (ví dụ: từ này có thể đi với 2-3 từ tiếp theo). Mô hình chính sẽ dùng một ma trận Mask Attention để kiểm tra toàn bộ các nhánh của cây này cùng một lúc, tăng tỷ lệ chấp nhận (Acceptance Rate).
+ * **Prompt Lookup Decoding:** Thuật toán đoán từ bằng cách so khớp chuỗi (string matching) ngay trong Prompt đầu vào (rất mạnh cho tác vụ RAG hoặc tóm tắt) mà hoàn toàn không tốn tài nguyên cho bất kỳ module AI nháp nào.
