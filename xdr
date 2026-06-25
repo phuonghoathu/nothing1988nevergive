@@ -1,0 +1,33 @@
+Dưới đây là bảng liệt kê toàn bộ các khái niệm, kỹ thuật và thuật ngữ cốt lõi được chia theo 3 nhóm tối ưu hóa LLM Inference độc lập.
+## NHÓM 1: MODEL COMPRESSION (NÈN MÔ HÌNH)
+*Bản chất: Thay đổi trực tiếp vào trọng số (weights) hoặc cấu trúc vật lý để mô hình nhỏ hơn, nhẹ hơn và tốn ít VRAM hơn.*
+ * **Quantization (Lượng tử hóa):** Kỹ thuật giảm độ chính xác của các trọng số (ví dụ từ FP16 xuống INT8, INT4, FP4) để giảm dung lượng file model và tăng tốc độ tính toán của GPU.
+   * **PTQ (Post-Training Quantization):** Lượng tử hóa mô hình ngay sau khi đã train xong (nhanh, phổ biến).
+   * **QAT (Quantization-Aware Training):** Vừa train vừa giả lập lượng tử hóa (tốn thời gian nhưng giữ chất lượng tốt hơn).
+   * **GGUF / GGML:** Định dạng file mô hình tối ưu riêng cho việc chạy trên CPU/Apple Silicon (llama.cpp).
+   * **AWQ / GPTQ:** Các thuật toán lượng tử hóa tối ưu riêng cho GPU để không làm suy giảm quá nhiều độ chính xác của LLM.
+   * **Bitsandbytes:** Thư viện phổ biến dùng để load mô hình ở dạng 8-bit hoặc 4-bit (NF4) khi fine-tune hoặc inference.
+ * **Knowledge Distillation (Chưng cất tri thức):**
+   * **Teacher-Student Architecture:** Mô hình lớn (Teacher) đóng vai trò người dạy, ép mô hình nhỏ (Student) học theo phân phối xác suất đầu ra của mình để mô hình nhỏ thông minh gần bằng mô hình lớn.
+ * **Pruning (Cắt tỉa mô hình):**
+   * **Structured Pruning:** Cắt bỏ nguyên cả một cụm neuron, một head attention hoặc nguyên một layer ít quan trọng.
+   * **Unstructured Pruning:** Loại bỏ các trọng số (weights) có giá trị gần bằng 0 rải rác trong ma trận (tạo ra ma trận thưa - sparse matrix).
+ * **Low-Rank Approximation (Xấp xỉ hạng thấp):** Phân rã ma trận trọng số lớn thành các ma trận nhỏ hơn để giảm số lượng phép tính.
+## NHÓM 2: MEMORY & SYSTEM OPTIMIZATION (TỐI ƯU HỆ THỐNG / BỘ NHỚ)
+*Bản chất: Giữ nguyên mô hình, thay đổi cách quản lý tài nguyên phần cứng (VRAM/GPU) để giải quyết bài toán nghẽn băng thông.*
+ * **KV Cache (Key-Value Cache):** Cơ chế lưu lại các trạng thái tính toán của các token cũ để khi sinh token mới không phải tính toán lại từ đầu (đây là thành phần ngốn VRAM nhất lúc inference).
+ * **PagedAttention:** Thuật toán quản lý bộ nhớ KV Cache tương tự như cơ chế phân trang (Paging) của Hệ điều hành. Nó chia nhỏ KV Cache và lưu rải rác trên VRAM giúp giảm lãng phí bộ nhớ xuống gần 0% (Công nghệ lõi của vLLM).
+ * **FlashAttention (FlashAttention-1/2/3):** Thuật toán tối ưu hóa tầng phần cứng (Triton/CUDA) giúp tăng tốc độ tính toán ma trận Attention bằng cách giảm số lần đọc/ghi dữ liệu giữa bộ nhớ SRAM và HBM của GPU.
+ * **Continuous Batching (hoặc In-flight Batching):** Cơ chế gom các request của người dùng lại thành một batch liên tục ở tầng dynamic. Khi một request chạy xong, nó lập tức được giải phóng và request mới được nhồi vào ngay mà không cần đợi cả batch chạy xong.
+ * **Chunked Prefill:** Chia nhỏ giai đoạn đọc Prompt (Prefill) của các request dài thành nhiều phần nhỏ để chạy xen kẽ với giai đoạn sinh chữ (Decoding) của các request khác, giúp giảm hiện tượng giật lag hệ thống.
+ * **Tensor Parallelism (TP) & Pipeline Parallelism (PP):** Các kỹ thuật phân mảnh mô hình ra nhiều GPU song song khi mô hình quá to không vừa 1 con GPU.
+## NHÓM 3: ADVANCED DECODING ALGORITHMS (THUẬT TOÁN GIẢI MÃ NÂNG CAO)
+*Bản chất: Giữ nguyên mô hình và trọng số, thay đổi chiến thuật/thuật toán sinh chữ từ "tìm kiếm tuần tự từng từ" sang "đoán trước hàng loạt rồi lọc".*
+ * **Autoregressive Decoding:** Thuật toán sinh chữ truyền thống (rặn từng từ một, từ sau phụ thuộc vào từ trước).
+ * **Speculative Decoding (Giải mã suy đoán):** Chiến thuật tổng thể: dùng một thực thể chạy nhanh đoán mò trước K token, sau đó dùng mô hình chính duyệt lại toàn bộ trong 1 lượt chạy.
+ * **Draft-Model-Based Speculative Decoding:** Kiểu cổ điển, hệ thống phải load đồng thời 2 mô hình (1 Target Model lớn + 1 Draft Model nhỏ độc lập).
+ * **Draft-Model-Free Speculative Decoding:** Kiểu hiện đại, tự mô hình lớn sinh chữ đoán mò mà không cần cài thêm mô hình nhỏ nào khác.
+   * **MTP (Multi-Token Prediction) lúc Inference:** Tính năng dùng các đầu dự đoán song song được huấn luyện sẵn trong lõi (như Qwen/Gemma) để tự bắn ra một cụm từ tiếp theo.
+   * **Medusa / Eagle Heads:** Các tầng tuyến tính phụ (Heads) được gắn thêm vào block cuối cùng của LLM để dự đoán trước các vị trí t+1, t+2, t+3...
+   * **Tree-structured Attention (Tree-Attention):** Cơ chế chuyển chuỗi dự đoán mò thành một "cây các trường hợp khả thi" và dùng một ma trận Attention dạng mặt nạ (Mask) để kiểm tra toàn bộ các nhánh của cây trong đúng 1 forward pass.
+ * **Prompt Lookup Decoding:** Thuật toán đoán từ bằng cách "lục lọi" lại các cụm từ trùng lặp ngay trong chính Prompt đầu vào (rất hiệu quả cho tác vụ RAG hoặc tóm tắt tài liệu mà không tốn 1 chút năng lực tính toán nào).
