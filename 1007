@@ -1,0 +1,579 @@
+Đúng. Nếu công ty yêu cầu bạn “list các khó khăn khi đổi model”, tôi sẽ không chỉ liệt kê “phải sửa prompt”. Với Claude Code + Skills + tool/terminal + JSONL + guard như hệ thống của bạn, có thể chia thành 10 nhóm ảnh hưởng.
+
+OpenAI hiện cũng ghi rõ rằng model behavior thay đổi giữa các model snapshots/families và khuyến nghị dùng eval để establish baseline, test model mới và đo lại sau thay đổi. Đặc biệt tài liệu upgrade GPT-5.5 còn tách riêng các vấn đề như prompt, structured output, tool use, long-running/tool-heavy workflows và validation. 
+
+Danh sách khó khăn khi thay đổi LLM Model
+
+#	Khía cạnh	Ảnh hưởng khi đổi model
+
+1	Instruction following	Cùng một skill nhưng model mới có thể hiểu/ưu tiên instruction khác → bỏ qua một số bước
+2	Agent behavior / planning	Cách model lập kế hoạch khác: làm tuần tự, song song, hoặc tự rút ngắn workflow
+3	Tool calling	Thay đổi cách chọn tool, thứ tự gọi tool, số lần gọi, arguments → script/harness có thể bị ảnh hưởng
+4	Coding behavior	Model có thể sửa code theo cách khác, phạm vi file thay đổi khác, refactor nhiều hơn/ít hơn
+5	Skill compatibility	Skill được tối ưu cho model cũ có thể cần prompt/rule mới để đạt cùng behavior
+6	Guard / validation scripts	Các guard được viết dựa trên behavior cũ có thể không còn phù hợp hoặc phát sinh false positive/negative
+7	Output format / structured output	JSON, Markdown, code block, field ordering, format tuân thủ schema có thể thay đổi → parser/downstream processing lỗi
+8	Context & long-horizon behavior	Với task dài, model mới có thể xử lý context, phase, memory hoặc stopping behavior khác
+9	Performance / cost / latency	Token usage, thời gian chạy, số tool calls và chi phí có thể thay đổi; model “mạnh hơn” không đồng nghĩa mọi workflow rẻ/hay nhanh hơn
+10	Regression & validation	Kết quả trước đây không còn đảm bảo; phải chạy lại test/eval trên bộ task đại diện
+
+
+Với trường hợp của bạn, tôi sẽ nhấn mạnh thêm 5 điểm
+
+1. Không chỉ prompt thay đổi — cả behavior của agent thay đổi.
+
+Đây là điểm quan trọng nhất.
+
+Ví dụ:
+
+Skill yêu cầu:
+
+Inspect
+ → Plan
+ → Modify
+ → Test
+ → Verify
+
+Model A:
+
+Inspect → Plan → Modify → Test → Verify
+
+Model B:
+
+Inspect → Modify → Test
+
+Model C:
+
+Inspect → Modify → "Done"
+
+Skill không nhất thiết sai. Nhưng assumption về behavior của model đã thay đổi.
+
+OpenAI cũng ghi rõ generative AI có tính biến thiên và traditional software testing không hoàn toàn đủ; eval cần được dùng để đo behavior. 
+
+
+---
+
+2. Tool-heavy agent chịu ảnh hưởng đặc biệt lớn.
+
+Đây là điểm rất sát với Claude Code của bạn.
+
+Một coding agent không đơn giản là:
+
+Prompt → Answer
+
+mà là:
+
+Prompt
+ ↓
+Reasoning
+ ↓
+Tool call
+ ↓
+Tool result
+ ↓
+Reasoning
+ ↓
+Tool call
+ ↓
+...
+ ↓
+Final
+
+Chỉ cần model mới thay đổi tool selection / tool arguments / stopping behavior là cả workflow có thể khác.
+
+OpenAI hiện đưa riêng tool use, multiple tool calls, long-running workflows và multi-agent workflows vào các trường hợp cần validation khi upgrade. 
+
+
+---
+
+3. Guard/script phải re-calibrate.
+
+Đây chính xác là cái bạn đang tốn công.
+
+Model cũ
+ ↓
+JSONL
+ ↓
+phát hiện behavior
+ ↓
+guard
+
+Đổi model:
+
+Model mới
+ ↓
+behavior khác
+ ↓
+JSONL khác
+ ↓
+guard cũ có thể không đủ
+ ↓
+phải phân tích lại
+ ↓
+thêm/sửa script
+
+=> Đây là engineering effort thực tế, không phải “chỉ đổi model name”.
+
+
+---
+
+4. Regression không chỉ là “output đúng hay sai”.
+
+Đối với coding agent nên kiểm tra ít nhất:
+
+Functional correctness
+Code quality
+Files changed
+Tool calls
+Tool arguments
+Required steps
+Tests executed
+Verification completed
+Token usage
+Latency
+Failure recovery
+
+Ví dụ model mới vẫn tạo code đúng nhưng:
+
+old: 8 tool calls
+new: 25 tool calls
+
+hoặc:
+
+old: 3 files changed
+new: 17 files changed
+
+thì vẫn là regression đối với agent system.
+
+
+---
+
+5. Model mới có thể tốt hơn trên benchmark nhưng chưa chắc tốt hơn cho skill nội bộ.
+
+Đây là câu rất đáng đưa vào báo cáo.
+
+Model B > Model A
+
+trên benchmark tổng quát không có nghĩa:
+
+Model B > Model A
+
+trên:
+
+Company Skill
++ Company Repository
++ Company Coding Convention
++ Company Tools
++ Company Guards
++ Company Workflow
+
+Vì vậy cần internal eval, không thể chỉ nhìn benchmark của nhà cung cấp.
+
+OpenAI cũng khuyến nghị đánh giá model trên test data đại diện cho real-world inputs và dùng eval để thiết lập baseline trước khi tối ưu/thay model. 
+
+
+---
+
+Tôi sẽ viết phần kết luận cho công ty như thế này
+
+Khó khăn và ảnh hưởng khi thay đổi LLM Model
+
+Việc thay đổi LLM model không nên được xem đơn thuần là thay đổi một model identifier. Đối với hệ thống sử dụng AI Agent, Claude Code, Skills, tool calling, terminal và các validation/guard scripts, model là một thành phần có ảnh hưởng trực tiếp đến behavior của toàn bộ workflow.
+
+Các ảnh hưởng chính gồm:
+
+1. Instruction/Skill Compatibility
+   Model mới có thể diễn giải và ưu tiên instructions khác model cũ, dẫn đến việc skill đang hoạt động ổn định phải được điều chỉnh.
+
+2. Agent Planning Behavior
+   Cách model lập kế hoạch, chia nhỏ task, thực hiện tuần tự hay song song và quyết định khi nào task hoàn thành có thể thay đổi.
+
+3. Tool Calling Behavior
+   Có thể thay đổi tool selection, thứ tự gọi tool, số lượng tool calls và arguments. Điều này đặc biệt quan trọng đối với coding agent.
+
+4. Coding Behavior
+   Cách model đọc source code, lựa chọn file cần sửa, refactor và xử lý lỗi có thể thay đổi. Vì vậy cùng một skill có thể tạo ra phạm vi thay đổi code khác nhau.
+
+5. Guard / Script Compatibility
+   Các script được xây dựng dựa trên behavior của model cũ có thể cần điều chỉnh khi model mới xuất hiện. Có thể phát sinh cả false positive và false negative.
+
+6. Output / Structured Data Compatibility
+   Format output, JSON, structured output hoặc cách model tuân thủ schema có thể thay đổi và ảnh hưởng tới các bước xử lý phía sau.
+
+7. Long-running Workflow Behavior
+   Với các task nhiều bước, model mới có thể có behavior khác về context handling, stopping criteria, phase transitions và persistence.
+
+8. Performance / Cost / Latency
+   Số lượng token, số lần gọi tool, thời gian xử lý và chi phí có thể thay đổi. Model có capability cao hơn không đồng nghĩa mọi workflow sẽ có cost hoặc latency tốt hơn.
+
+9. Regression Risk
+   Một model mới có thể cải thiện một số task nhưng đồng thời làm giảm chất lượng ở những task khác. Vì vậy cần regression testing trên các workflow thực tế của công ty.
+
+10. Migration Effort
+    Việc migration có thể bao gồm phân tích log, cập nhật skills, prompt, scripts, guards, test cases và re-validation toàn bộ workflow.
+
+Đặc biệt đối với AI Agent
+
+Rủi ro cao hơn so với ứng dụng chỉ sử dụng LLM để sinh text:
+
+"User → Agent → Model → Tool → Result → Model → Tool → ... → Final"
+
+Model behavior có thể ảnh hưởng đến toàn bộ chuỗi trên, không chỉ final answer.
+
+Đề xuất
+
+Khi thay thế model, nên có một giai đoạn Model Compatibility / Regression Evaluation trước khi production migration.
+
+Quy trình đề xuất:
+
+"Existing Model"
+→ "Baseline Evaluation"
+→ "New Model"
+→ "Regression Evaluation"
+→ "Analyze Behavior Differences"
+→ "Update Skill/Guard if necessary"
+→ "Re-run Evaluation"
+→ "Production"
+
+Không nhất thiết phải giữ model cũ lâu dài. Tuy nhiên cần có đủ thời gian để đánh giá compatibility và xử lý regression trước khi model cũ bị loại bỏ hoàn toàn.
+
+OpenAI cũng khuyến nghị sử dụng evaluations để đo behavior khi nâng cấp hoặc thử model mới, và tài liệu upgrade của họ yêu cầu validation đối với prompt, tool use, structured output và các workflow phức tạp.Điểm tôi nghĩ có sức nặng nhất khi nói với công ty là: đây không phải yêu cầu “cho developer thêm thời gian vì sửa skill hơi cực”. Nó là regression/migration cost của một hệ thống AI có behavior phụ thuộc model. Chính tài liệu của OpenAI cũng mô tả model behavior thay đổi giữa snapshots/families và khuyến nghị eval khi upgrade model. 
+
+Ngoài ra, ngay cả OpenAI khi hướng dẫn upgrade GPT cũng không giả định “đổi model string là xong”; họ phân loại trường hợp phải sửa prompt, tool-heavy workflow, structured output và yêu cầu validation. 
+
+
+Có. Và lần này có tài liệu chính thức rất hợp để bạn đưa cho công ty, thậm chí không cần dựa vào paper học thuật.
+
+Điểm quan trọng là: chính OpenAI và Anthropic đều thừa nhận model thay đổi có thể làm workflow/application thay đổi, và khuyến nghị phải eval/test trước khi migration.
+
+1. Quan trọng nhất: OpenAI nói thẳng model behavior thay đổi
+
+OpenAI có tài liệu về Model Optimization, ghi rõ rằng:
+
+> model behavior changes between model snapshots and families
+
+
+
+và vì vậy developer phải liên tục đo lường và tune ứng dụng. Họ đề xuất workflow bắt đầu bằng eval để tạo baseline, rồi mới tối ưu prompt/model. 
+
+[OpenAI — Model optimization](https://developers.openai.com/api/docs/guides/model-optimization?utm_source=chatgpt.com)
+
+Cái này gần như đúng y vấn đề bạn đang gặp:
+
+Model A
+   ↓
+Skill/Prompt
+   ↓
+Behavior baseline
+
+Model B
+   ↓
+Behavior changes
+   ↓
+Run eval
+   ↓
+Tune
+
+
+---
+
+2. OpenAI còn nói rõ hơn về việc upgrade model
+
+Trong hướng dẫn upgrade model, OpenAI khuyến nghị khi nâng model phải:
+
+validate behavior bằng evals/spot checks
+
+kiểm tra workflow hiện tại
+
+có thể cần thay đổi prompt
+
+đặc biệt với workflow coding-oriented, tool-heavy, multi-agent thì behavior có thể cần điều chỉnh. 
+
+
+[OpenAI — Upgrading to GPT-5.4](https://developers.openai.com/api/docs/guides/upgrading-to-gpt-5p4?utm_source=chatgpt.com)
+
+Cái này rất sát Claude Code + skills của bạn.
+
+Bạn có thể nói với công ty:
+
+> "Việc đổi model không tương đương với việc đổi version của một thư viện thông thường. Với agent/tool-heavy workflow, model mới có thể thay đổi hành vi, nên cần regression evaluation trước khi migration."
+
+
+
+
+---
+
+3. OpenAI có hẳn tài liệu về Evals cho việc upgrade model
+
+OpenAI viết rất trực tiếp:
+
+> Evals ... are an essential component to building reliable applications.
+
+
+
+và dùng eval để test và cải thiện output, đặc biệt khi upgrading or trying new models. 
+
+[OpenAI — Working with evals](https://developers.openai.com/api/docs/guides/evals?utm_source=chatgpt.com)
+
+Thậm chí họ còn nói generative AI có tính biến thiên, nên traditional software testing không hoàn toàn đủ; cần evaluation để kiểm tra reliability. 
+
+
+---
+
+4. Anthropic cũng xác nhận chính sách model retirement gây migration cost
+
+Cái này lại càng phù hợp với tình huống công ty bạn.
+
+Anthropic viết thẳng:
+
+> Applications relying on Anthropic models may need occasional updates to keep working.
+
+
+
+Và trong migration guidance, họ khuyến nghị test application với model mới trước thời điểm retirement. 
+
+[Anthropic — Model deprecations](https://docs.anthropic.com/en/docs/about-claude/model-deprecations?utm_source=chatgpt.com)
+
+Thậm chí Anthropic ghi rõ việc retire model có downside:
+
+người dùng phải migrate sang model mới
+
+researcher mất khả năng tiếp tục comparative studies
+
+model retirement tạo ra các rủi ro liên quan đến việc duy trì hệ thống
+
+
+
+
+
+---
+
+Tôi nghĩ bạn có thể đưa công ty đề xuất này
+
+Không cần xin:
+
+> "Cho tôi giữ model cũ mãi."
+
+
+
+Mà đề xuất quy trình migration:
+
+MODEL MỚI RA
+                   │
+                   ▼
+          ┌─────────────────┐
+          │ Compatibility   │
+          │ / Regression    │
+          │ Eval             │
+          └────────┬────────┘
+                   │
+          ┌────────┴────────┐
+          │                 │
+       PASS              FAIL
+          │                 │
+          ▼                 ▼
+       Deploy        Analyze behavior
+                            │
+                            ▼
+                     Update skill/
+                     guard/adapter
+                            │
+                            ▼
+                       Re-run eval
+
+Đặc biệt với hệ thống của bạn, JSONL log + skill + script/guard chính là infrastructure để thực hiện regression eval.
+
+
+---
+
+Câu tôi nghĩ bạn nên nói với sếp/CTY
+
+> "Model replacement should be treated as a behavioral compatibility change, not merely a model version change."
+
+
+
+Và:
+
+> "Before replacing an existing model, we should run the existing agent skills against a fixed regression/evaluation suite. If behavior changes cause failures, we need a migration period to update skills and guards."
+
+
+
+Đây không phải yêu cầu cá nhân của bạn. Nó phù hợp với chính hướng dẫn của OpenAI và Anthropic: model behavior có thể thay đổi giữa model families/snapshots, và application cần evaluation trước khi migration. 
+
+Tôi nghĩ bạn có lý do khá chắc để phản biện chính sách "model mới ra → xóa model cũ → đổi ngay". Vấn đề không phải là giữ model cũ vô thời hạn; vấn đề là phải có compatibility/regression window, đặc biệt khi công ty đang dùng Claude Code + skills + scripts + tool calling, chứ không đơn thuần hỏi đáp LLM.
+
+Đúng 😄. Và không phải chỉ mình bạn thấy cực đâu. Những người làm agent/harness nghiêm túc cũng gặp đúng bài toán này.
+
+Nhưng có một điểm khác: họ thường không đổi model liên tục trong production.
+
+Thường họ làm kiểu:
+
+Stable Model
+                      │
+              ┌───────▼────────┐
+              │ Agent Harness   │
+              │ + Skills        │
+              │ + Tests         │
+              │ + Guards        │
+              └───────┬────────┘
+                      │
+                 Production
+
+Model mới muốn đưa vào thì coi như một phiên bản implementation mới, phải qua benchmark trước.
+
+Còn bạn đang ở trạng thái khó hơn
+
+Bạn đang liên tục:
+
+Qwen 3.6
+   ↓
+Qwen 3.8
+   ↓
+GPT-5.6 Luna
+   ↓
+GPT-6 Luna
+   ↓
+...
+
+Mỗi lần đổi:
+
+┌─ skill behavior
+                    ├─ tool usage
+NEW MODEL ──────────┼─ planning
+                    ├─ shortcut tendency
+                    ├─ output format
+                    └─ verification behavior
+
+nên cảm giác "skill đang chạy ngon → đổi model → mọi thứ lại lệch" là hoàn toàn dễ hiểu.
+
+
+---
+
+Những team lớn thường giải quyết bằng "model qualification"
+
+Không phải:
+
+> "Model mới hay quá, đổi sang dùng ngay."
+
+
+
+Mà là:
+
+New Model
+    ↓
+Run fixed benchmark
+    ↓
+100~1000 tasks
+    ↓
+Compare against current model
+    ↓
+PASS?
+ ┌──┴──┐
+YES    NO
+ ↓      ↓
+Deploy  Reject
+
+Skill/harness không được sửa để chiều model mới ngay lập tức.
+
+Đây là điểm tôi nghĩ bạn có thể áp dụng rất mạnh.
+
+
+---
+
+Với hệ thống của bạn, tôi sẽ giữ một "Golden JSONL"
+
+Ví dụ:
+
+benchmark/
+├── java-migration/
+├── bug-fix/
+├── refactor/
+├── feature/
+└── tests/
+
+Mỗi task có:
+
+task.json
+expected/
+golden/
+
+Sau đó:
+
+GPT-5.6
+   ↓
+100 tasks
+   ↓
+92 PASS
+
+GPT-6
+   ↓
+100 tasks
+   ↓
+86 PASS
+
+Thế là bạn không cần cảm giác bằng tay:
+
+> "Hình như GPT-6 làm tắt hơn..."
+
+
+
+Mà có số liệu:
+
+GPT-5.6     GPT-6
+--------------------------------------
+Task success          92%        86%
+Skip verification      3%        11%
+Wrong files            2%         4%
+Tool misuse            1%         5%
+
+
+---
+
+Và có một điều tôi nghĩ rất hợp với trường hợp của bạn
+
+Đừng cố làm skill chạy tốt với mọi model.
+
+Làm:
+
+> 1 bộ skill chuẩn + benchmark chuẩn.
+
+
+
+Sau đó model nào đạt chuẩn thì dùng.
+
+Model nào không đạt:
+
+GPT-6
+  ↓
+PASS benchmark
+  ↓
+dùng
+
+Nếu:
+
+GPT-6
+  ↓
+FAIL benchmark
+  ↓
+không đổi skill
+  ↓
+chờ model/harness cải thiện
+
+hoặc chỉ thêm adapter rất nhỏ.
+
+
+---
+
+Nói cách khác, thay vì:
+
+> "Model mới → tôi phải sửa skill."
+
+
+
+hãy chuyển thành:
+
+> "Model mới → model phải chứng minh nó chạy được skill của tôi."
+
+
+
+😄 Tôi nghĩ đây mới là cách thoát khỏi cái vòng Qwen → sửa → GPT → sửa → GPT-6 → sửa tiếp mà bạn đang bị mắc.
